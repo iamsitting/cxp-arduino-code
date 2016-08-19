@@ -36,18 +36,16 @@ void loop(){
 				break;
 			case 0x51: //Q
 			case 0x71: //q
-        //11111000
+        //xxxxxx000
 				sf &= 0xF8; //stream = false, rts = false, new_session = false
 				break;
       case 0x57: //W
       case 0x77: //w
-        sf |= 0x03; //0b011, new_session = true
+        sf |= 0x02; //0bx1x, new_session = true
 			default:
 				//do nothing
 				__asm__("nop\n\t");
 		}
-	  Serial.println(state);
-    Serial.println(sf);
 	}
 	
 	btSend();
@@ -64,13 +62,13 @@ void btSend(){
 		if (sf & 0x01){ //rts
 			if ((sf & 0x02) >> 1){ //new_session
 				byteWrite(SEND_HEADER);
-        //11111101
+        //0bxxxxxx0x
 				sf &= 0xFD; //new_session = false
 			} else {
 				getData();
 				byteWrite(SEND_DATA);
 			}
-     //11111110
+     //0bxxxxxxx0
 			sf &= 0xFE; //rts = false;
 		}
 	} else {
@@ -157,7 +155,7 @@ void byteWrite(uint8_t protocol){
       packet[17] = 0x74; //t
       packet[18] = 0x33; //3
       
-      for(c = 0; c<18; c++){
+      for(c = 0; c<19; c++){
         checksum += packet[c]; 
       }
       packet[19] = checksum & 0xFF;
