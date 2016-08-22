@@ -1,27 +1,32 @@
 #ifndef TYPES_H
 #define TYPES_H
+#include <stdint.h>
 
-//8-bit integer, may also use char and byte
+	/* 8-bit integer, may also use char and byte */
 typedef		signed		char	int8_t;
 typedef		unsigned	char	uint8_t;
 
-//16-bit integer, may also use short and word
+	/* 16-bit integer, may also use short and word */
+	//for Arduino u/int16_t defined in <stdint.h>
 //typedef		signed 		short	int16_t;
 //typedef		unsigned	short	uint16_t;
 
-//32-bit integer
+	/* 32-bit integer */
 typedef		signed		long	int32_t;
 typedef		unsigned	long	uint32_t;
 
-//32-bit floating-point
+	/* 32-bit floating-point */
 typedef					float	float32_t;
 
-//data structures
+	/** Data Structures **/
+
+	/* TwoWord to use for 32-bit types */
 struct TwoWords {
 	uint16_t rd0;
 	uint16_t rd1;
 };
 
+	/* fourbytes to use for 32-bit types */
 struct fourbytes {
 	uint8_t te0;
 	uint8_t te1;
@@ -29,19 +34,18 @@ struct fourbytes {
 	uint8_t te3;
 };
 
-//Floater type
+	/* Breaks float into words and bytes */
 union Floater32_t{
 	float32_t bits32;
-	TwoWords wo;
-	fourbytes by;
+	struct TwoWords wo;
+	struct fourbytes by;
 };
 
+	/* timeStamp consists of hour. minute, and second */
 struct timeStamp {
   uint8_t hour;
   uint8_t minute;
-  Floater32_t second;
+  union Floater32_t second;
 };
-
-
 
 #endif

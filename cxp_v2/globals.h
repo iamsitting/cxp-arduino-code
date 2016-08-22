@@ -21,17 +21,48 @@
 	
 	/** BT definitions **/
 #define BAUD_RATE 9600
+#define BUFFER_SIZE 32
 	
 	/** global variables **/
-extern Floater32_t g_fMetric1;
-extern Floater32_t g_fMetric2;
-extern Floater32_t g_fMetric3;
-extern uint8_t sf; //status field
+	
+	/* Metric variables */
+extern union Floater32_t g_fMetric1;
+extern union Floater32_t g_fMetric2;
+extern union Floater32_t g_fMetric3;
+extern struct timeStamp g_TimeStamp;
+
+	/* Bluetooth variables */
+extern uint8_t g_bySendPacket[BUFFER_SIZE];
+extern int8_t g_byRecvPacket;
+
+	/* Program variables */
+extern uint16_t g_wOffsetTime;
+extern uint8_t g_byStatus;
+	/* Bitfield variable
+	Bit 0: Ready To Send - Only sends data when RTS is high. RTS goes low after sending data.
+	Bit 1: New Session - When high CSV header is sent instead of data.
+	Bit 2: Stream - Only sends data when this bit high. BT Client can toggle this on and off.
+	Bit 3: ERPS - This is high when ERPS mode is enabled. 
+	Bit 4: Undefined
+	Bit 5: Undefined
+	Bit 6: Undefined
+	Bit 7: Undefined
+	*/
+
+//extern uint8_t g_byIOstatus; //bitfield
+	/*	
+	Bit 0: ACC. - High when Accelerometer is connected (always)
+	Bit 1: Bluetooth - High when bluetooth is connected
+	Bit 2: GPS - Low when GPS signal is connected
+	Bit 3: XBee - High when Xbee is connected
+	Bit 4: Solo Mode - High when Solo mode
+	Bit 5: Race Mode - High when Race mode
+	Bit 6: Train Mode - High when Train mode
+	Bit 7: Undefined
+	
+	*/
 
 	/** functions **/
 int8_t btListen(void);
 void btSend(void);
-void getData(void);
-void getTime(void);
-void byteWrite(uint8_t protocol);
 #endif
