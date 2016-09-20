@@ -5,11 +5,15 @@ struct timeStamp g_TimeStamp;
 Floater32_t g_fMetric1;
 Floater32_t g_fMetric2;
 Floater32_t g_fMetric3;
+Floater32_t g_fLatitude;
+Floater32_t g_fLongitude;
 
 uint8_t g_bySendPacket[BUFFER_SIZE];
 uint8_t g_byStatus = 0x00;
 int8_t g_byRecvPacket = -1;
 uint16_t g_wOffsetTime = 0;
+uint8_t g_byNextUpdate = 0;
+uint8_t g_byMode = MODE_IDLE;
 
 	/** Setup Arduino objects **/
 
@@ -19,34 +23,44 @@ void setup(){
 
 	/** Switches between modes of operation i.e the "OS" **/
 void loop(){
+	
+	//listen for commands from App
 	g_byRecvPacket = btListen();
 	
 	if(g_byRecvPacket > -1){
 		
 		switch(g_byRecvPacket){
-			case 0x45: //E
-			case 0x65: //e
-				g_byStatus |= 0x05; //0b101, stream = true, rts = true
+			//Apply correct Mode of operation and System status
+			
+			case 0x45: //E - Enable Stream
+				SET_STATUS(g_byStatus, RTS);
+				SET_STATUS(g_byStatus, STREAM);
 				g_wOffsetTime = millis();
 				break;
-			case 0x4B: //K
-			case 0x6B: //k
-				g_byStatus |= 0x01; //rts = true
+			case 0x4B: //K - Send next sample
+				SET_STATUS(g_byStatus, RTS);
 				break;
-			case 0x51: //Q
-			case 0x71: //q
-				//xxxxxx000
-				g_byStatus &= 0xF8; //stream = false, rts = false, new_session = false
+			case 0x51: //Q - End Session
+				CLEAR_STATUS(g_byStatus, STREAM);
+				CLEAR_STATUS(g_byStatus, RTS);
+				CLEAR_STATUS(g_byStatus, NEW_SESSION);
+				g_byMode = MODE_IDLE;
 				break;
-			case 0x57: //W
-			case 0x77: //w
-				g_byStatus |= 0x02; //0bx1x, new_session = true
+			case 0x52: //R - Reset ERPS
+				g_byMode = MODE_IDLE;
+				break;
+			case 0x57: //W - New Solo Session
+				g_byMode = MODE_SOLO;
+				SET_STATUS(g_byStatus, NEW_SESSION);
 			default:
 				//do nothing
 				__asm__("nop\n\t");
 		}
 	}
+	//update data
+	test_updateData();
 	
+	//Send message to App
 	btSend();
 	
 }
@@ -58,23 +72,43 @@ int8_t btListen(){
 }
 
 void btSend(){
-	if ((g_byStatus & 0x04) >> 2){ //if stream
-		if (g_byStatus & 0x01){ //rts
-			if ((g_byStatus & 0x02) >> 1){ //new_session
-				byteWrite(SEND_HEADER);
-				//0bxxxxxx0x
-				g_byStatus &= 0xFD; //new_session = false
-			} else {
-				getData();
-				byteWrite(SEND_DATA);
-			}
+	switch(g_byMODE){
+		
+		//This is a standby mode
+		case MODE_IDLE:
+			//TODO: Send battery percentage
+			_asm_("nop\n\t");
+			break;
+		
+		//Activated when ADS detects accident
+		case MODE_ERPS:
+			byteWrite(SEND_ERPS);
+			break;
+			
+		//RTD Modes
+		case MODE_SOLO:
+		case MODE_RACE:
+		case MODE_TRAINEE:
+		case MODE_TRAINER:
+			if (CHECK_STATUS(g_byStatus, STREAM)){
+		
+				if (CHECK_STATUS(g_byStatus, RTS)){
+			
+					if (CHECK_STATUS(g_byStatus, NEW_SESSION)){
+						byteWrite(SEND_HEADER);
+						CLEAR_STATUS(g_byStatus, NEW_SESSION);
+					} else {
+						byteWrite(SEND_DATA);
+					}
 
-			Serial.write(g_bySendPacket, BUFFER_SIZE);
-			//0bxxxxxxx0
-			g_byStatus &= 0xFE; //rts = false;
-		}
-	} else {
-		g_byStatus &= 0xFE; //rts = false
-	}
+					Serial.write(g_bySendPacket, BUFFER_SIZE);
+					CLEAR_STATUS(g_byStatus, RTS);
+				}
+			} else {
+				CLEAR_STATUS(g_byStatus, RTS);
+			}
+			break;
+		default:
+			break;
 }
 

@@ -16,8 +16,27 @@
 #define elapsedDays(_time_) ( _time_ / SECS_PER_DAY)
 
 	/** Modes **/
+#define MODE_IDLE 0
+#define MODE_SOLO 1
+#define MODE_RACE 2
+#define MODE_TRAINEE 3
+#define MODE_TRAINER 4
+#define MODE_ERPS 5
+
+	/** bit-wise macros **/
+#define CHECK_STATUS(var, pos) ((var) & (1<<(pos)))
+#define CLEAR_STATUS(var, pos) ((var) &= ~((1) <<(pos)))
+#define SET_STATUS(var, pos) ((var) |= ((1) <<(pos)))
+
+#define RTS 0
+#define NEW_SESSION 1
+#define STREAM 2
+#define ERPS 3
+
+	/** Protocols **/
 #define SEND_DATA 1
 #define SEND_HEADER 2
+#define SEND_ERPS 3
 	
 	/** BT definitions **/
 #define BAUD_RATE 9600
@@ -30,12 +49,16 @@ extern union Floater32_t g_fMetric1;
 extern union Floater32_t g_fMetric2;
 extern union Floater32_t g_fMetric3;
 extern struct timeStamp g_TimeStamp;
+extern union Floater32_t g_fLatitude;
+extern union Floater32_t g_fLongitude;
+extern union Floater32_t g_fBatteryLevel;
 
 	/* Bluetooth variables */
 extern uint8_t g_bySendPacket[BUFFER_SIZE];
 extern int8_t g_byRecvPacket;
 
 	/* Program variables */
+extern uint8_t g_byNextUpdate;
 extern uint16_t g_wOffsetTime;
 extern uint8_t g_byStatus;
 	/* Bitfield variable
@@ -55,14 +78,15 @@ extern uint8_t g_byStatus;
 	Bit 1: Bluetooth - High when bluetooth is connected
 	Bit 2: GPS - Low when GPS signal is connected
 	Bit 3: XBee - High when Xbee is connected
-	Bit 4: Solo Mode - High when Solo mode
-	Bit 5: Race Mode - High when Race mode
-	Bit 6: Train Mode - High when Train mode
+	Bit 4: Undefined
+	Bit 5: Undefined
+	Bit 6: Undefined
 	Bit 7: Undefined
 	
 	*/
 
-	/** functions **/
+extern uint8_t g_byModes;
+	/** main functions **/
 int8_t btListen(void);
 void btSend(void);
 #endif

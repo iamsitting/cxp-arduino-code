@@ -2,12 +2,16 @@
 #include "functions.h"
 
 //We will write data processing functions here
-
-void getData(){
-	g_fMetric1.bits32 = (float) analogRead(POT) * 9.77517;
-	g_fMetric2.bits32 = g_fMetric1.bits32 + 1;
-	g_fMetric3.bits32 = g_fMetric2.bits32 + 1;
+void test_getData(){
+	
+	
+	
 	getTime();
+}
+
+void test_getERPS(){
+	g_fLatitude.bits32 = (float) 40;
+	g_fLongitude.bits32 = (float) 0;
 }
 
 void getTime(){
@@ -18,6 +22,38 @@ void getTime(){
 	g_TimeStamp.second.bits32 = numberOfSeconds(elapsedTime) + (float32_t)(elapsedMillis % 1000)/1000;
 }
 
+void test_updateData(){
+	
+	switch(g_byNextUpdate){
+		case 0:
+			updateBatteryLevel();
+			g_fMetric1.bits32 = (float) analogRead(POT) * 9.77517;
+			g_byNextUpdate++;
+			break;
+		case 1:
+			updateSpeed();
+			g_fMetric2.bits32 = g_fMetric1.bits32 + 1;
+			g_byNextUpdate++;
+			break;
+		case 2:
+			updateADS();
+			g_fMetric3.bits32 = g_fMetric2.bits32 + 1;
+			g_byNextUpdate = 0;
+			break;
+		default:
+			break;
+			
+	}
+}
+void updateADS(){
+	//Accident detection code here
+}
+void updateSpeed(){
+	//Speed from GPS/Acc. Here
+}
+void updateBatteryLevel(){
+	//Battery Percentage Code Here
+}
 void byteWrite(uint8_t protocol){
 	uint8_t packet[BUFFER_SIZE];
 	uint8_t i = 0;
@@ -26,6 +62,8 @@ void byteWrite(uint8_t protocol){
 	
 	switch(protocol){
 		case SEND_DATA:
+			getTime();
+			
 			packet[0] = g_TimeStamp.hour;
 			packet[1] = g_TimeStamp.minute;
 			packet[2] = g_TimeStamp.second.by.te3;
@@ -89,6 +127,27 @@ void byteWrite(uint8_t protocol){
 			packet[20] = protocol;
 			packet[21] = 0xA7;
 				
+			break;
+		case SEND_ERPS:
+			getTime();
+			
+			packet[0] = g_fLatitude.by.te3;
+			packet[1] = g_fLatitude.by.te2;
+			packet[2] = g_fLatitude.by.te1;
+			packet[3] = g_fLatitude.by.te0;
+			
+			packet[4] = g_fLongitude.by.te3;
+			packet[5] = g_fLongitude.by.te2;
+			packet[6] = g_fLongitude.by.te1;
+			packet[7] = g_fLongitude.by.te0;
+			
+			for(c = 0; c<8; c++)
+			{
+				checksum += packet[c];
+			}
+			packet[8] = checksum & 0xFF;
+			packet[9] = protocol;
+			packet[10] = 0xA7;
 			break;
 		default:
 			break;
