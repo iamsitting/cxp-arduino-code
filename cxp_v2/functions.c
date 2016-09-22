@@ -1,11 +1,7 @@
 #include "globals.h"
 #include "functions.h"
-
 //We will write data processing functions here
 void test_getData(){
-	
-	
-	
 	getTime();
 }
 

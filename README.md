@@ -6,9 +6,12 @@ This project contains the embedded software for the Cycle X-Pro. This project is
 
 ### Version
 
-2.0.1
+2.0.2
 
 ### Most Recent Changes
+
+2.0.2 - Added testing header files for test/validation
+      - Loadable, not tested
 
 2.0.1 - Preliminary ERPS mode added
       - Status checking is made more readable

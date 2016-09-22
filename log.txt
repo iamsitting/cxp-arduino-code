@@ -1,5 +1,8 @@
 ## Log
 
+2.0.2 - Added testing header files for test/validation
+      - Loadable, not tested
+
 2.0.1 - Preliminary ERPS mode added
       - Status checking is made more readable
 
