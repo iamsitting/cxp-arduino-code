@@ -50,6 +50,7 @@
 /** BT definitions **/
 #define BAUD_RATE 9600
 #define BUFFER_SIZE 32
+#define HC06 Serial3
 
 /** global variables **/
 

@@ -1,10 +1,12 @@
 ## Log
 
+2.0.3 - Edited for Due. BT tested. ERPS untested
+
 2.0.2 - Added testing header files for test/validation
-      - Loadable, not tested
+- Loadable, not tested
 
 2.0.1 - Preliminary ERPS mode added
-      - Status checking is made more readable
+- Status checking is made more readable
 
 2.0.0 - The SW was reorganized into a few C and H files. This reorganization has made it easier to test on other arduinos and to add new features or protocols.
 

@@ -14,33 +14,38 @@
 #define TEST_CODE
 
 #ifdef TEST_CODE
-#define PIN3 3
-#define PIN4 4
-#define PIN5 5
+#define PIN53 53
+#define PIN51 51
+#define PIN49 49
+#define PIN47 47
 
 void feedbackLED() {
     switch (g_byMode) {
         case MODE_IDLE:
-            digitalWrite(PIN3, HIGH);
-            digitalWrite(PIN4, LOW);
-            digitalWrite(PIN5, LOW);
+            digitalWrite(PIN53, HIGH);
+            digitalWrite(PIN51, LOW);
+            digitalWrite(PIN49, LOW);
             break;
         case MODE_ERPS:
-            digitalWrite(PIN3, LOW);
-            digitalWrite(PIN4, HIGH);
-            digitalWrite(PIN5, LOW);
+            digitalWrite(PIN53, LOW);
+            digitalWrite(PIN51, HIGH);
+            digitalWrite(PIN49, LOW);
             break;
         case MODE_SOLO:
-            digitalWrite(PIN3, LOW);
-            digitalWrite(PIN4, LOW);
-            digitalWrite(PIN5, HIGH);
+            digitalWrite(PIN53, LOW);
+            digitalWrite(PIN51, LOW);
+            digitalWrite(PIN49, HIGH);
             break;
         default:
-            digitalWrite(PIN3, LOW);
-            digitalWrite(PIN4, LOW);
-            digitalWrite(PIN5, LOW);
+            digitalWrite(PIN53, LOW);
+            digitalWrite(PIN51, LOW);
+            digitalWrite(PIN49, LOW);
             
     }
+}
+
+uint8_t getPushButton() {
+    return digitalRead(PIN47);
 }
 #endif
 

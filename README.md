@@ -6,9 +6,11 @@ This project contains the embedded software for the Cycle X-Pro. This project is
 
 ### Version
 
-2.0.2
+2.0.3
 
 ### Most Recent Changes
+
+2.0.3 - Edited for Due. BT tested. ERPS untested
 
 2.0.2 - Added testing header files for test/validation
 - Loadable, not tested
@@ -17,8 +19,6 @@ This project contains the embedded software for the Cycle X-Pro. This project is
 - Status checking is made more readable
 - Modes Added
 - Untested Commit
-
-2.0.0 - The SW was reorganized into a few C and H files. This reorganization has made it easier to test on other arduinos and to add new features or protocols.
 
 ## Code Design
 

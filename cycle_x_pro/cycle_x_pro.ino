@@ -7,12 +7,12 @@
 // 				team14
 //
 // Date			9/22/16 9:40 AM
-// Version		2.0.2
+// Version		2.0.3
 //
 // Copyright	© Carlos Salamanca, 2016
 // Licence		MIT
 //
-// See         ReadMe.txt for references
+// See         README.md for references
 //
 
 
@@ -40,12 +40,13 @@ uint8_t g_byMode = MODE_IDLE;
 /** Setup Arduino objects **/
 
 void setup() {
-    Serial.begin(BAUD_RATE);
+    HC06.begin(BAUD_RATE);
     
 #ifdef TEST_CODE
-    pinMode(PIN3, OUTPUT);
-    pinMode(PIN4, OUTPUT);
-    pinMode(PIN5, OUTPUT);
+    pinMode(PIN53, OUTPUT);
+    pinMode(PIN51, OUTPUT);
+    pinMode(PIN49, OUTPUT);
+    pinMode(PIN47, INPUT);
 #endif
     
 }
@@ -101,7 +102,7 @@ void loop() {
 
 /** Input and output functions **/
 int8_t btListen() {
-    if (Serial.available() > 0) return Serial.read();
+    if (HC06.available() > 0) return HC06.read();
     else return -1;
 }
 
@@ -135,7 +136,7 @@ void btSend() {
                         byteWrite(SEND_DATA);
                     }
                     
-                    Serial.write(g_bySendPacket, BUFFER_SIZE);
+                    HC06.write(g_bySendPacket, BUFFER_SIZE);
                     CLEAR_STATUS(g_byStatus, RTS);
                 }
             } else {
