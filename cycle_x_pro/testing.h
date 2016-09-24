@@ -44,9 +44,6 @@ void feedbackLED() {
     }
 }
 
-uint8_t getPushButton() {
-    return digitalRead(PIN47);
-}
 #endif
 
 #endif /* testing_h */

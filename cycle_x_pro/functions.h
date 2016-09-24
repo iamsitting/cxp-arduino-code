@@ -31,6 +31,16 @@ extern "C" {
     void udpateBatteryLevel(void);
     
     
+    /** ALS Functions **/
+    void readDebounceButton(void);
+    void switchFlashingPattern(void);
+    void flashingPattern0(void);
+    void flashingPattern1(void);
+    void flashingPattern2(void);
+    void flashingPattern3(void);
+    void flashingPattern4(void);
+    
+    
     
     
     

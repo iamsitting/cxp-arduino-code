@@ -10,15 +10,15 @@ This project contains the embedded software for the Cycle X-Pro. This project is
 
 ### Most Recent Changes
 
-2.0.3 - Edited for Due. BT tested. ERPS untested
+2.0.4
+- Added battery protocol and idle mode
+- ERPS protocool and mode not working
+
+2.0.3
+- Edited for Due. BT tested. ERPS untested
 
 2.0.2 - Added testing header files for test/validation
 - Loadable, not tested
-
-2.0.1 - Preliminary ERPS mode added
-- Status checking is made more readable
-- Modes Added
-- Untested Commit
 
 ## Code Design
 
