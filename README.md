@@ -6,9 +6,13 @@ This project contains the embedded software for the Cycle X-Pro. This project is
 
 ### Version
 
-2.0.5
+2.0.6
 
 ### Most Recent Changes
+
+2.0.6
+- Reorganized ALS code
+- Rewrote byteWrite more intuitively
 
 2.0.5
 - Updated Pin Mappings
@@ -20,9 +24,6 @@ This project contains the embedded software for the Cycle X-Pro. This project is
 
 2.0.3
 - Edited for Due. BT tested. ERPS untested
-
-2.0.2 - Added testing header files for test/validation
-- Loadable, not tested
 
 ## Code Design
 

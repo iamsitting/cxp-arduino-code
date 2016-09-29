@@ -7,7 +7,7 @@
 // 				team14
 //
 // Date			9/22/16 9:40 AM
-// Version		2.0.5
+// Version		2.0.6
 //
 // Copyright	© Carlos Salamanca, 2016
 // Licence		MIT
@@ -20,6 +20,7 @@
 
 #include "globals.h"
 #include "functions.h"
+#include "als.h"
 #include "testing.h"
 
 /** Declare variables **/
@@ -32,6 +33,7 @@ Floater32_t g_fLongitude;
 uint8_t g_byBatteryLevel = 90;
 
 uint8_t g_bySendPacket[BUFFER_SIZE];
+uint8_t g_byBTSendFlag = 0;
 uint8_t g_byStatus = 0x00;
 int8_t g_byRecvPacket = -1;
 uint32_t g_wOffsetTime = 0;
@@ -185,7 +187,6 @@ void btSend() {
                 if(currentMillis - g_wIdleMillis > TEN_SECONDS) {
                     g_wIdleMillis = currentMillis;
                     byteWrite(SEND_BATTERY);
-                    HC06.write(g_bySendPacket, BUFFER_SIZE);
 #ifdef TEST_CODE
                     DEBUG.print("    SEND   ");
                     DEBUG.println(90);
@@ -202,8 +203,6 @@ void btSend() {
         case MODE_ERPS:
             if(!CHECK_STATUS(g_byStatus, ERPS)){
                 byteWrite(SEND_ERPS);
-                HC06.write(g_bySendPacket, BUFFER_SIZE);
-                HC06.flush();
 #ifdef TEST_CODE
                 DEBUG.print("    SEND   ");
                 DEBUG.println("ERPS");
@@ -227,8 +226,6 @@ void btSend() {
                 } else {
                     byteWrite(SEND_DATA);
                 }
-                
-                HC06.write(g_bySendPacket, BUFFER_SIZE);
                 CLEAR_STATUS(g_byStatus, RTS);
             }
             
@@ -236,6 +233,11 @@ void btSend() {
         default:
             __asm__("nop\n\t");
             break;
+    }
+    
+    if(g_byBTSendFlag){
+        HC06.write(g_bySendPacket, BUFFER_SIZE);
+        g_byBTSendFlag = 0;
     }
     
 }

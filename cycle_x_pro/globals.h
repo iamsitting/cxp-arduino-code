@@ -111,6 +111,7 @@ extern uint8_t g_byBatteryLevel;
 /* Bluetooth variables */
 extern uint8_t g_bySendPacket[BUFFER_SIZE];
 extern int8_t g_byRecvPacket;
+extern uint8_t g_byBTSendFlag;
 
 /* Program variables */
 extern uint8_t g_byNextUpdate;

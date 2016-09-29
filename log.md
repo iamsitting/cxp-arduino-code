@@ -1,5 +1,9 @@
 ## Log
 
+2.0.6
+- Reorganized ALS code
+- Rewrote byteWrite more intuitively
+
 2.0.5
 - Updated Pin Mappings
 - bugfix: Was not sending ERPS message
