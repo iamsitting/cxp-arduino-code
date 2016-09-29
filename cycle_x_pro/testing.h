@@ -10,15 +10,8 @@
 #define testing_h
 
 #include "globals.h"
-//Test Parameter - Comment out to ignore test cases
-#define TEST_CODE
 
 #ifdef TEST_CODE
-#define PIN53 53
-#define PIN51 51
-#define PIN49 49
-#define PIN47 47
-
 void feedbackLED() {
     switch (g_byMode) {
         case MODE_IDLE:

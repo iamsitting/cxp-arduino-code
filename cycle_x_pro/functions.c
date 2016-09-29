@@ -32,7 +32,7 @@ void test_updateData(){
     switch(g_byNextUpdate){
         case 0:
             updateBatteryLevel();
-            g_fMetric1.bits32 = (float) analogRead(POT) * 9.77517;
+            g_fMetric1.bits32 = (float) analogRead(POT_PIN) * 9.77517;
             g_byNextUpdate++;
             break;
         case 1:
@@ -63,7 +63,7 @@ void updateBatteryLevel(){
 /********************* ALS Begin - Tyle Henderson *************************/
 
 void readDebounceButton(){
-    uint8_t reading = digitalRead(PIN47);
+    uint8_t reading = digitalRead(BUTTON_PIN);
     
     if(reading != g_byLastButtonState){
         g_wLastDebounceTime = millis();
@@ -198,7 +198,7 @@ void flashingPattern4(){
     }
 }
 
-/********************* ALS End - Tyle Henderson *************************/
+/********************* ALS End - Tyler Henderson *************************/
 void byteWrite(uint8_t protocol){
     uint8_t packet[BUFFER_SIZE];
     uint8_t i = 0;
@@ -226,7 +226,6 @@ void byteWrite(uint8_t protocol){
             break;
         case SEND_DATA:
             getTime();
-            test_getERPS();
             
             packet[0] = g_TimeStamp.hour;
             packet[1] = g_TimeStamp.minute;
@@ -293,7 +292,7 @@ void byteWrite(uint8_t protocol){
             
             break;
         case SEND_ERPS:
-            getTime();
+            test_getERPS();
             
             packet[0] = g_fLatitude.by.te3;
             packet[1] = g_fLatitude.by.te2;

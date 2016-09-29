@@ -7,7 +7,7 @@
 // 				team14
 //
 // Date			9/22/16 9:40 AM
-// Version		2.0.4
+// Version		2.0.5
 //
 // Copyright	© Carlos Salamanca, 2016
 // Licence		MIT
@@ -54,7 +54,7 @@ uint8_t g_byFlashingCount = 0;
 
 void setup() {
     HC06.begin(BAUD_RATE);
-    Serial.begin(9600);
+    DEBUG.begin(9600);
     
     pinMode(ALSPIN1, OUTPUT);
     pinMode(ALSPIN2, OUTPUT);
@@ -64,7 +64,7 @@ void setup() {
     pinMode(PIN53, OUTPUT);
     pinMode(PIN51, OUTPUT);
     pinMode(PIN49, OUTPUT);
-    pinMode(PIN47, INPUT);
+    pinMode(BUTTON_PIN, INPUT);
 #endif
     
 }
@@ -74,21 +74,23 @@ void loop() {
     
     readDebounceButton();
 #ifdef ALS_TEST
-    Serial.println(g_byFlashingPattern);
+    DEBUG.println(g_byFlashingPattern);
     switchFlashingPattern();
     
-    Serial.print("        PB  ");
-    Serial.print(g_byCurrentButtonState);
-    Serial.print("     pattern   ");
-    Serial.print(g_byFlashingPattern);
-    Serial.print("  count ");
-    Serial.println(g_byFlashingCount);
+    DEBUG.print("        PB  ");
+    DEBUG.print(g_byCurrentButtonState);
+    DEBUG.print("     pattern   ");
+    DEBUG.print(g_byFlashingPattern);
+    DEBUG.print("  count ");
+    DEBUG.println(g_byFlashingCount);
 #endif
     //listen for commands from App
     g_byRecvPacket = btListen();
     
     if (g_byRecvPacket > -1) {
-        
+#ifdef TEST_CODE
+        DEBUG.println(g_byRecvPacket, HEX);
+#endif
         switch (g_byRecvPacket) {
                 //Apply correct Mode of operation and System status
             case 0x43: //C - BT Connected
@@ -118,6 +120,7 @@ void loop() {
             case 0x52: //R - Reset ERPS
             case 0x72:
                 g_byMode = MODE_IDLE;
+                CLEAR_STATUS(g_byStatus, ERPS);
                 break;
             case 0x57: //W - New Solo Session
             case 0x77:
@@ -150,8 +153,10 @@ void loop() {
     }
     
 #ifdef TEST_CODE
-    Serial.print("    MODE   ");
-    Serial.println(g_byMode);
+    DEBUG.print("    MODE   ");
+    DEBUG.print(g_byMode);
+    DEBUG.print("    STATUS   ");
+    DEBUG.println(g_byStatus, BIN);
 #endif
     
     
@@ -182,8 +187,8 @@ void btSend() {
                     byteWrite(SEND_BATTERY);
                     HC06.write(g_bySendPacket, BUFFER_SIZE);
 #ifdef TEST_CODE
-                    Serial.print("    SEND   ");
-                    Serial.println(90);
+                    DEBUG.print("    SEND   ");
+                    DEBUG.println(90);
 #endif
                 }
             }
@@ -197,9 +202,11 @@ void btSend() {
         case MODE_ERPS:
             if(!CHECK_STATUS(g_byStatus, ERPS)){
                 byteWrite(SEND_ERPS);
+                HC06.write(g_bySendPacket, BUFFER_SIZE);
+                HC06.flush();
 #ifdef TEST_CODE
-                Serial.print("    SEND   ");
-                Serial.println("ERPS");
+                DEBUG.print("    SEND   ");
+                DEBUG.println("ERPS");
 #endif
             }
             

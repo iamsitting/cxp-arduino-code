@@ -6,9 +6,13 @@ This project contains the embedded software for the Cycle X-Pro. This project is
 
 ### Version
 
-2.0.3
+2.0.5
 
 ### Most Recent Changes
+
+2.0.5
+- Updated Pin Mappings
+- bugfix: Was not sending ERPS message
 
 2.0.4
 - Added battery protocol and idle mode

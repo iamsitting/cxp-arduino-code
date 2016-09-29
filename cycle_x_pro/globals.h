@@ -10,12 +10,35 @@
 #define globals_h
 
 #include "types.h"
+/* Test Parameters */
+#define TEST_CODE
+//#define ALS_TEST
 
 /** Pin definitions **/
-#define POT 7
-#define ALSPIN1 31
-#define ALSPIN2 33
-#define ALSPIN3 35
+#ifdef TEST_CODE
+#define PIN53 53
+#define PIN51 51
+#define PIN49 49
+#define BUTTON_PIN 47
+#define POT_PIN 7
+#endif
+
+#define USOUND_IN   A0
+#define ALSPIN3     9
+#define ALSPIN2     10
+#define ALSPIN1     11
+#define BREAK_LT    12
+#define USOUND_LT   13
+
+#define ADS_INT1    48
+#define ADS_INT2    50
+#define ADS_CSB     52
+
+#define DEBUG       Serial
+#define GP20U7      Serial1
+#define HC06        Serial2
+#define XBPRO       Serial3
+
 
 /** time formatting **/
 #define SECS_PER_MIN (60UL)
@@ -27,37 +50,36 @@
 #define numberOfHours(_time_) ((_time_ % SECS_PER_DAY) / SECS_PER_HOUR)
 #define elapsedDays(_time_) ( _time_ / SECS_PER_DAY)
 
-#define TEN_SECONDS 10000
-#define THIRTY_SECONDS 30000
-
-/** Modes **/
-#define MODE_IDLE 0
-#define MODE_SOLO 1
-#define MODE_RACE 2
-#define MODE_TRAINEE 3
-#define MODE_TRAINER 4
-#define MODE_ERPS 5
+#define TEN_SECONDS     10000
+#define THIRTY_SECONDS  30000
 
 /** bit-wise macros **/
 #define CHECK_STATUS(var, pos) ((var) & (1<<(pos)))
 #define CLEAR_STATUS(var, pos) ((var) &= ~((1) <<(pos)))
 #define SET_STATUS(var, pos) ((var) |= ((1) <<(pos)))
 
-#define RTS 0
+#define RTS         0
 #define NEW_SESSION 1
-#define ERPS 2
-#define BTCON 3
+#define ERPS        2
+#define BTCON       3
+
+/** Modes **/
+#define MODE_IDLE       0
+#define MODE_SOLO       1
+#define MODE_RACE       2
+#define MODE_TRAINEE    3
+#define MODE_TRAINER    4
+#define MODE_ERPS       5
 
 /** Protocols **/
-#define SEND_BATTERY 27
-#define SEND_DATA 1
-#define SEND_HEADER 2
-#define SEND_ERPS 3
+#define SEND_BATTERY    27
+#define SEND_DATA       1
+#define SEND_HEADER     2
+#define SEND_ERPS       3
 
 /** BT definitions **/
-#define BAUD_RATE 9600
+#define BAUD_RATE   9600
 #define BUFFER_SIZE 32
-#define HC06 Serial3
 
 
 /** ALS variables **/
@@ -98,9 +120,9 @@ extern uint8_t g_byStatus;
 /* Bitfield variable
  Bit 0: Ready To Send - Only sends data when RTS is high. RTS goes low after sending data.
  Bit 1: New Session - When high CSV header is sent instead of data.
- Bit 2: Stream - Only sends data when this bit high. BT Client can toggle this on and off.
- Bit 3: ERPS - This is high when ERPS mode is enabled.
- Bit 4: BTCON - This is high when BT connection is established
+ Bit 2: ERPS - This is high when ERPS mode is enabled.
+ Bit 3: BTCON - This is high when BT connection is established
+ Bit 4: Undefined
  Bit 5: Undefined
  Bit 6: Undefined
  Bit 7: Undefined

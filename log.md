@@ -1,5 +1,9 @@
 ## Log
 
+2.0.5
+- Updated Pin Mappings
+- bugfix: Was not sending ERPS message
+
 2.0.4
 - Added battery protocol and idle mode
 - ERPS protocool and mode not working
