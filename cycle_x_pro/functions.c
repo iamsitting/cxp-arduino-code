@@ -15,8 +15,8 @@ void test_getData(){
 }
 
 void test_getERPS(){
-    g_fLatitude.bits32 = (float) 40;
-    g_fLongitude.bits32 = (float) 0;
+    g_fLatitude.bits32 = (float) 30.6209756;
+    g_fLongitude.bits32 = (float) -96.3395046;
 }
 
 void getTime(){

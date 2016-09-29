@@ -13,6 +13,7 @@
 /* Test Parameters */
 #define TEST_CODE
 //#define ALS_TEST
+//#define TEST_ERPS
 
 /** Pin definitions **/
 #ifdef TEST_CODE
@@ -58,10 +59,10 @@
 #define CLEAR_STATUS(var, pos) ((var) &= ~((1) <<(pos)))
 #define SET_STATUS(var, pos) ((var) |= ((1) <<(pos)))
 
-#define RTS         0
-#define NEW_SESSION 1
-#define ERPS        2
-#define BTCON       3
+#define RTS             0
+#define NEW_SESSION     1
+#define ERPS            2
+#define BTCON           3
 
 /** Modes **/
 #define MODE_IDLE       0

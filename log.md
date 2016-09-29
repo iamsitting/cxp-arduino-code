@@ -1,5 +1,9 @@
 ## Log
 
+2.0.7
+- Bugfix: ALS Flashing Patter 3&4
+- ERPS is fully tested
+
 2.0.6
 - Reorganized ALS code
 - Rewrote byteWrite more intuitively

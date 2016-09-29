@@ -7,7 +7,7 @@
 // 				team14
 //
 // Date			9/22/16 9:40 AM
-// Version		2.0.6
+// Version		2.0.7
 //
 // Copyright	© Carlos Salamanca, 2016
 // Licence		MIT
@@ -56,13 +56,13 @@ uint8_t g_byFlashingCount = 0;
 
 void setup() {
     HC06.begin(BAUD_RATE);
-    DEBUG.begin(9600);
     
     pinMode(ALSPIN1, OUTPUT);
     pinMode(ALSPIN2, OUTPUT);
     pinMode(ALSPIN3, OUTPUT);
     
 #ifdef TEST_CODE
+    DEBUG.begin(9600);
     pinMode(PIN53, OUTPUT);
     pinMode(PIN51, OUTPUT);
     pinMode(PIN49, OUTPUT);
@@ -117,6 +117,7 @@ void loop() {
             case 0x71:
                 g_byMode = MODE_IDLE;
                 CLEAR_STATUS(g_byStatus, NEW_SESSION);
+                CLEAR_STATUS(g_byStatus, ERPS);
                 SET_STATUS(g_byStatus, RTS);
                 break;
             case 0x52: //R - Reset ERPS
@@ -203,7 +204,7 @@ void btSend() {
         case MODE_ERPS:
             if(!CHECK_STATUS(g_byStatus, ERPS)){
                 byteWrite(SEND_ERPS);
-#ifdef TEST_CODE
+#ifdef TEST_ERPS
                 DEBUG.print("    SEND   ");
                 DEBUG.println("ERPS");
 #endif

@@ -25,9 +25,9 @@ void readDebounceButton(){
             
             if(g_byCurrentButtonState == HIGH){
                 g_byFlashingPattern = (g_byFlashingPattern + 1 == 5 ? 0 : g_byFlashingPattern + 1);
-#ifdef TEST_CODE
+#ifdef TEST_ERPS
                 g_byMode = MODE_ERPS;
-#endif //TEST_CODE
+#endif //TEST_ERPS
             }
         }
     }
@@ -109,6 +109,7 @@ void flashingPattern3(){
                 digitalWrite(ALSPIN1, LOW);
                 digitalWrite(ALSPIN2, LOW);
                 digitalWrite(ALSPIN3, HIGH);
+                break;
             default:
                 digitalWrite(ALSPIN1, LOW);
                 digitalWrite(ALSPIN2, LOW);
@@ -137,6 +138,7 @@ void flashingPattern4(){
                 digitalWrite(ALSPIN1, LOW);
                 digitalWrite(ALSPIN2, HIGH);
                 digitalWrite(ALSPIN3, HIGH);
+                break;
             default:
                 digitalWrite(ALSPIN1, LOW);
                 digitalWrite(ALSPIN2, LOW);

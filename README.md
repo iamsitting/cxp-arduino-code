@@ -6,9 +6,13 @@ This project contains the embedded software for the Cycle X-Pro. This project is
 
 ### Version
 
-2.0.6
+2.0.7
 
 ### Most Recent Changes
+
+2.0.7
+- Bugfix: ALS Flashing Patter 3&4
+- ERPS is fully tested
 
 2.0.6
 - Reorganized ALS code
@@ -21,9 +25,6 @@ This project contains the embedded software for the Cycle X-Pro. This project is
 2.0.4
 - Added battery protocol and idle mode
 - ERPS protocool and mode not working
-
-2.0.3
-- Edited for Due. BT tested. ERPS untested
 
 ## Code Design
 
@@ -41,3 +42,10 @@ This file defines global variables that are used across the INO and C files. Des
 
 This is where data processing functions and futrue functions are to be written. Function declarations are located in the H file.
 
+### testing.c
+
+This is where untested or feedback functions are written. Function declarations are located in the H file. Macros are in the globals file.
+
+### als.c
+
+This is where ALS functions are written.
