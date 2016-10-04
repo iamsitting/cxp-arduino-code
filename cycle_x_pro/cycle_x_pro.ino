@@ -7,7 +7,7 @@
 // 				team14
 //
 // Date			9/22/16 9:40 AM
-// Version		2.0.7
+// Version		2.0.8
 //
 // Copyright	© Carlos Salamanca, 2016
 // Licence		MIT
@@ -41,8 +41,7 @@ uint8_t g_byNextUpdate = 0;
 uint8_t g_byMode = MODE_IDLE;
 uint32_t g_wIdleMillis = 0;
 
-uint8_t g_byLastButtonState = LOW;
-uint8_t g_byCurrentButtonState = 0;
+uint8_t g_byChangedToSimple = 0;
 uint32_t g_wLastDebounceTime = 0;
 uint8_t g_byFlashingPattern = 0;
 uint32_t g_wPreviousMillis = 0;
@@ -57,26 +56,25 @@ uint8_t g_byFlashingCount = 0;
 void setup() {
     HC06.begin(BAUD_RATE);
     
-    pinMode(ALSPIN1, OUTPUT);
-    pinMode(ALSPIN2, OUTPUT);
-    pinMode(ALSPIN3, OUTPUT);
+#ifdef ALS_TEST
+    ALSSetup();
+#endif
     
 #ifdef TEST_CODE
     DEBUG.begin(9600);
     pinMode(PIN53, OUTPUT);
     pinMode(PIN51, OUTPUT);
     pinMode(PIN49, OUTPUT);
-    pinMode(BUTTON_PIN, INPUT);
 #endif
-    
+
 }
 
 /** Switches between modes of operation i.e the "OS" **/
 void loop() {
-    
-    readDebounceButton();
+
 #ifdef ALS_TEST
     DEBUG.println(g_byFlashingPattern);
+    
     switchFlashingPattern();
     
     DEBUG.print("        PB  ");
@@ -241,5 +239,15 @@ void btSend() {
         g_byBTSendFlag = 0;
     }
     
+}
+
+void ALSSetup(){
+    pinMode(ALSPIN1, OUTPUT);
+    pinMode(ALSPIN2, OUTPUT);
+    pinMode(ALSPIN3, OUTPUT);
+    
+    
+    pinMode(ALS_BUTTON_PIN, INPUT);
+    attachInterrupt(digitalPinToInterrupt(ALS_BUTTON_PIN), ALSButton_isr, RISING);
 }
 

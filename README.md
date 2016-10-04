@@ -6,9 +6,12 @@ This project contains the embedded software for the Cycle X-Pro. This project is
 
 ### Version
 
-2.0.7
+2.0.8
 
 ### Most Recent Changes
+
+2.0.8
+- Button Interrupt tested
 
 2.0.7
 - Bugfix: ALS Flashing Patter 3&4
@@ -21,10 +24,6 @@ This project contains the embedded software for the Cycle X-Pro. This project is
 2.0.5
 - Updated Pin Mappings
 - bugfix: Was not sending ERPS message
-
-2.0.4
-- Added battery protocol and idle mode
-- ERPS protocool and mode not working
 
 ## Code Design
 

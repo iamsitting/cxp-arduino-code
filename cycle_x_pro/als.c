@@ -11,45 +11,42 @@
 #include "als.h"
 
 /********************* Written by Tyler Henderson *************************/
-
-void readDebounceButton(){
-    uint8_t reading = digitalRead(BUTTON_PIN);
-    
-    if(reading != g_byLastButtonState){
+void ALSButton_isr(){
+    if((millis() - g_wLastDebounceTime) > DEBOUNCE_DELAY){
+        
+        g_byFlashingPattern = (g_byFlashingPattern + 1 == 5 ? 0 : g_byFlashingPattern + 1);
+        if(g_byFlashingPattern < 2) g_byChangedToSimple = 0;
+        
+#ifdef TEST_ERPS
+        g_byMode = MODE_ERPS;
+#endif //TEST_ERPS
+        
         g_wLastDebounceTime = millis();
     }
-    
-    if((millis() - g_wLastDebounceTime) > DEBOUNCE_DELAY){
-        if(reading != g_byCurrentButtonState){
-            g_byCurrentButtonState = reading;
-            
-            if(g_byCurrentButtonState == HIGH){
-                g_byFlashingPattern = (g_byFlashingPattern + 1 == 5 ? 0 : g_byFlashingPattern + 1);
-#ifdef TEST_ERPS
-                g_byMode = MODE_ERPS;
-#endif //TEST_ERPS
-            }
-        }
-    }
-    g_byLastButtonState = reading;
 }
 
 void switchFlashingPattern(){
     switch (g_byFlashingPattern) {
         case 0:
-            flashingPattern0();
+            if(g_byChangedToSimple == 0){
+                flashingPattern0(); //simple
+                g_byChangedToSimple = 1;
+            }
             break;
         case 1:
-            flashingPattern1();
+            if(g_byChangedToSimple == 0){
+                flashingPattern1(); //simple
+                g_byChangedToSimple = 1;
+            }
             break;
         case 2:
-            flashingPattern2();
+            flashingPattern2(); //complex
             break;
         case 3:
-            flashingPattern3();
+            flashingPattern3(); //complex
             break;
         case 4:
-            flashingPattern4();
+            flashingPattern4(); //complex
             break;
         default:
             g_byFlashingPattern = 0;

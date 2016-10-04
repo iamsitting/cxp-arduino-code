@@ -12,6 +12,7 @@
 #include "types.h"
 /* Test Parameters */
 #define TEST_CODE
+#define TEST_ISR
 //#define ALS_TEST
 //#define TEST_ERPS
 
