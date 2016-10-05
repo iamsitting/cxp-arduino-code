@@ -13,7 +13,7 @@
 /* Test Parameters */
 #define TEST_CODE
 #define TEST_ISR
-//#define ALS_TEST
+#define ALS_TEST
 //#define TEST_ERPS
 
 /** Pin definitions **/
@@ -21,7 +21,7 @@
 #define PIN53 53
 #define PIN51 51
 #define PIN49 49
-#define BUTTON_PIN 47
+#define ALS_BUTTON_PIN 47
 #define POT_PIN 7
 #endif
 
@@ -85,12 +85,10 @@
 
 
 /** ALS variables **/
-#define DEBOUNCE_DELAY 50
+#define DEBOUNCE_DELAY 200
 
-#define FLASH_INTERVAL 200
-
-extern uint8_t g_byLastButtonState;
-extern uint8_t g_byCurrentButtonState;
+#define FLASH_INTERVAL 100
+extern uint8_t g_byChangedToSimple;
 extern uint32_t g_wLastDebounceTime;
 extern uint8_t g_byFlashingPattern;
 extern uint32_t g_wPreviousMillis;
@@ -148,6 +146,7 @@ extern uint8_t g_byStatus;
 /** main functions **/
 int8_t btListen(void);
 void btSend(void);
+void setupALS(void);
 
 
 #endif /* globals_h */

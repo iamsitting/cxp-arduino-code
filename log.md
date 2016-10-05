@@ -1,5 +1,9 @@
 ## Log
 
+2.0.9
+- ALS is tested
+- Testing Battery Indicator on SEND_DATA
+
 2.0.8
 - Button Interrupt tested
 

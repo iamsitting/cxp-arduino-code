@@ -7,7 +7,7 @@
 // 				team14
 //
 // Date			9/22/16 9:40 AM
-// Version		2.0.8
+// Version		2.0.9
 //
 // Copyright	© Carlos Salamanca, 2016
 // Licence		MIT
@@ -57,7 +57,7 @@ void setup() {
     HC06.begin(BAUD_RATE);
     
 #ifdef ALS_TEST
-    ALSSetup();
+    setupALS();
 #endif
     
 #ifdef TEST_CODE
@@ -72,21 +72,13 @@ void setup() {
 /** Switches between modes of operation i.e the "OS" **/
 void loop() {
 
-#ifdef ALS_TEST
-    DEBUG.println(g_byFlashingPattern);
-    
+    //1. switch flashing pattern
     switchFlashingPattern();
-    
-    DEBUG.print("        PB  ");
-    DEBUG.print(g_byCurrentButtonState);
-    DEBUG.print("     pattern   ");
-    DEBUG.print(g_byFlashingPattern);
-    DEBUG.print("  count ");
-    DEBUG.println(g_byFlashingCount);
-#endif
-    //listen for commands from App
+
+    //2. listen for commands from App
     g_byRecvPacket = btListen();
     
+    //3. Parse command/change mode
     if (g_byRecvPacket > -1) {
 #ifdef TEST_CODE
         DEBUG.println(g_byRecvPacket, HEX);
@@ -157,9 +149,10 @@ void loop() {
     DEBUG.print("    MODE   ");
     DEBUG.print(g_byMode);
     DEBUG.print("    STATUS   ");
-    DEBUG.println(g_byStatus, BIN);
+    DEBUG.print(g_byStatus, BIN);
+    DEBUG.print("     pattern   ");
+    DEBUG.println(g_byFlashingPattern);
 #endif
-    
     
     //update data
     test_updateData();
@@ -167,6 +160,15 @@ void loop() {
     //Send message to App
     btSend();
     
+}
+
+void setupALS(){
+    pinMode(ALSPIN1, OUTPUT);
+    pinMode(ALSPIN2, OUTPUT);
+    pinMode(ALSPIN3, OUTPUT);
+    
+    pinMode(ALS_BUTTON_PIN, INPUT);
+    attachInterrupt(digitalPinToInterrupt(ALS_BUTTON_PIN), ALSButton_isr, RISING);
 }
 
 /** Input and output functions **/
@@ -200,13 +202,25 @@ void btSend() {
             
             //Activated when ADS detects accident
         case MODE_ERPS:
+        {
             if(!CHECK_STATUS(g_byStatus, ERPS)){
                 byteWrite(SEND_ERPS);
-#ifdef TEST_ERPS
-                DEBUG.print("    SEND   ");
-                DEBUG.println("ERPS");
-#endif
+
+            } else{
+                uint16_t currentMillis = millis();
+                if(currentMillis - g_wIdleMillis > TEN_SECONDS) {
+                    g_wIdleMillis = currentMillis;
+                    byteWrite(SEND_BATTERY);
+
+                }
             }
+            
+#ifdef TEST_CODE
+            DEBUG.print("    SEND   ");
+            DEBUG.println(90);
+#endif
+        }
+            
             
             break;
             
@@ -241,13 +255,5 @@ void btSend() {
     
 }
 
-void ALSSetup(){
-    pinMode(ALSPIN1, OUTPUT);
-    pinMode(ALSPIN2, OUTPUT);
-    pinMode(ALSPIN3, OUTPUT);
-    
-    
-    pinMode(ALS_BUTTON_PIN, INPUT);
-    attachInterrupt(digitalPinToInterrupt(ALS_BUTTON_PIN), ALSButton_isr, RISING);
-}
+
 

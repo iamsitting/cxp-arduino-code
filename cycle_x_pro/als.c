@@ -14,7 +14,7 @@
 void ALSButton_isr(){
     if((millis() - g_wLastDebounceTime) > DEBOUNCE_DELAY){
         
-        g_byFlashingPattern = (g_byFlashingPattern + 1 == 5 ? 0 : g_byFlashingPattern + 1);
+        g_byFlashingPattern = (g_byFlashingPattern + 1 >= 5 ? 0 : g_byFlashingPattern + 1);
         if(g_byFlashingPattern < 2) g_byChangedToSimple = 0;
         
 #ifdef TEST_ERPS
@@ -28,12 +28,14 @@ void ALSButton_isr(){
 void switchFlashingPattern(){
     switch (g_byFlashingPattern) {
         case 0:
+            
             if(g_byChangedToSimple == 0){
                 flashingPattern0(); //simple
                 g_byChangedToSimple = 1;
             }
             break;
         case 1:
+            
             if(g_byChangedToSimple == 0){
                 flashingPattern1(); //simple
                 g_byChangedToSimple = 1;
@@ -114,7 +116,7 @@ void flashingPattern3(){
                 break;
         }
         
-        g_byFlashingCount = (g_byFlashingCount + 1 == 5 ? 1 : g_byFlashingCount + 1);
+        g_byFlashingCount = (g_byFlashingCount + 1 >= 5 ? 1 : g_byFlashingCount + 1);
     }
 }
 
@@ -143,7 +145,7 @@ void flashingPattern4(){
                 break;
         }
         
-        g_byFlashingCount = (g_byFlashingCount + 1 == 9 ? 1 : g_byFlashingCount + 1);
+        g_byFlashingCount = (g_byFlashingCount + 1 >= 9 ? 1 : g_byFlashingCount + 1);
     }
 }
 

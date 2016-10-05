@@ -6,9 +6,13 @@ This project contains the embedded software for the Cycle X-Pro. This project is
 
 ### Version
 
-2.0.8
+2.0.9
 
 ### Most Recent Changes
+
+2.0.9
+- ALS is tested
+- Testing Battery Indicator on SEND_DATA
 
 2.0.8
 - Button Interrupt tested

@@ -111,13 +111,16 @@ void byteWrite(uint8_t protocol){
             packet[16] = g_fMetric3.by.te1;
             packet[17] = g_fMetric3.by.te0;
             
-            for(c = 0; c<18; c++){
+            //TODO: Handle this on the App
+            packet[18] = g_byBatteryLevel;
+            
+            for(c = 0; c<19; c++){
                 checksum += packet[c];
             }
             
-            packet[18] = checksum & 0xFF;
-            packet[19] = protocol;
-            packet[20] = 0xA7;
+            packet[19] = checksum & 0xFF;
+            packet[20] = protocol;
+            packet[21] = 0xA7;
             
             break;
         case SEND_HEADER:
