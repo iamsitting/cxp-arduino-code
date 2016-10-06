@@ -6,9 +6,13 @@ This project contains the embedded software for the Cycle X-Pro. This project is
 
 ### Version
 
-2.0.9
+2.0.10
 
 ### Most Recent Changes
+
+2.0.10
+- Rewrote SEND_DATA
+- Battery Indicator tested
 
 2.0.9
 - ALS is tested
@@ -20,14 +24,6 @@ This project contains the embedded software for the Cycle X-Pro. This project is
 2.0.7
 - Bugfix: ALS Flashing Patter 3&4
 - ERPS is fully tested
-
-2.0.6
-- Reorganized ALS code
-- Rewrote byteWrite more intuitively
-
-2.0.5
-- Updated Pin Mappings
-- bugfix: Was not sending ERPS message
 
 ## Code Design
 
