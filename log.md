@@ -1,5 +1,10 @@
 ## Log
 
+2.0.11
+- Threat flag added, not tested
+- New BT receiving routine
+- Changed SEND_BATTERY to SEND_IDLE
+
 2.0.10
 - Rewrote SEND_DATA
 - Battery Indicator tested

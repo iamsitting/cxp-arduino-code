@@ -7,7 +7,7 @@
 // 				team14
 //
 // Date			9/22/16 9:40 AM
-// Version		2.0.10
+// Version		2.0.11
 //
 // Copyright	© Carlos Salamanca, 2016
 // Licence		MIT
@@ -31,15 +31,18 @@ Floater32_t g_fMetric3;
 Floater32_t g_fLatitude;
 Floater32_t g_fLongitude;
 uint8_t g_byBatteryLevel = 90;
+uint8_t g_byThreat = 0;
 
 uint8_t g_bySendPacket[BUFFER_SIZE];
+uint8_t g_byRecvPacket[BUFFER_SIZE];
 uint8_t g_byBTSendFlag = 0;
+uint8_t g_byBTRecvFlag = 0;
 uint8_t g_byStatus = 0x00;
-int8_t g_byRecvPacket = -1;
 uint32_t g_wOffsetTime = 0;
 uint8_t g_byNextUpdate = 0;
 uint8_t g_byMode = MODE_IDLE;
 uint32_t g_wIdleMillis = 0;
+uint32_t g_wDataMillis = 0;
 
 uint8_t g_byChangedToSimple = 0;
 uint32_t g_wLastDebounceTime = 0;
@@ -76,14 +79,17 @@ void loop() {
     switchFlashingPattern();
 
     //2. listen for commands from App
-    g_byRecvPacket = btListen();
+    btListen();
     
     //3. Parse command/change mode
-    if (g_byRecvPacket > -1) {
+    if (g_byBTRecvFlag) {
+        g_byBTRecvFlag = 0;
 #ifdef TEST_CODE
-        DEBUG.println(g_byRecvPacket, HEX);
+        DEBUG.write(g_byRecvPacket[0]);
+        DEBUG.write(g_byRecvPacket[1]);
+        DEBUG.write('\n');
 #endif
-        switch (g_byRecvPacket) {
+        switch (g_byRecvPacket[0]) {
                 //Apply correct Mode of operation and System status
             case 0x43: //C - BT Connected
             case 0x63:
@@ -145,14 +151,14 @@ void loop() {
         }
     }
     
-#ifdef TEST_CODE
+//#ifdef TEST_CODE
     DEBUG.print("    MODE   ");
-    DEBUG.print(g_byMode);
+    DEBUG.println(g_byMode);
     DEBUG.print("    STATUS   ");
     DEBUG.print(g_byStatus, BIN);
-    DEBUG.print("     pattern   ");
-    DEBUG.println(g_byFlashingPattern);
-#endif
+    //DEBUG.print("     pattern   ");
+    //DEBUG.println(g_byFlashingPattern);
+//#endif
     
     //update data
     test_updateData();
@@ -172,9 +178,16 @@ void setupALS(){
 }
 
 /** Input and output functions **/
-int8_t btListen() {
-    if (HC06.available() > 0) return HC06.read();
-    else return -1;
+void btListen() {
+    uint8_t i = 0;
+    uint8_t inChar = 0;
+    while (HC06.available()){
+        inChar = HC06.read();
+        g_byRecvPacket[i++] = inChar;
+        if(inChar == '\n'){
+            g_byBTRecvFlag = 1;
+        }
+    }
 }
 
 void btSend() {
@@ -185,13 +198,9 @@ void btSend() {
         {
             if(CHECK_STATUS(g_byStatus, BTCON)){
                 uint16_t currentMillis = millis();
-                if(currentMillis - g_wIdleMillis > TEN_SECONDS) {
+                if(currentMillis - g_wIdleMillis > THREE_SECONDS) {
                     g_wIdleMillis = currentMillis;
-                    byteWrite(SEND_BATTERY);
-#ifdef TEST_CODE
-                    DEBUG.print("    SEND   ");
-                    DEBUG.println(90);
-#endif
+                    byteWrite(SEND_IDLE);
                 }
             }
         }
@@ -210,15 +219,10 @@ void btSend() {
                 uint16_t currentMillis = millis();
                 if(currentMillis - g_wIdleMillis > TEN_SECONDS) {
                     g_wIdleMillis = currentMillis;
-                    byteWrite(SEND_BATTERY);
+                    byteWrite(SEND_IDLE);
 
                 }
             }
-            
-#ifdef TEST_CODE
-            DEBUG.print("    SEND   ");
-            DEBUG.println(90);
-#endif
         }
             
             
@@ -229,18 +233,25 @@ void btSend() {
         case MODE_RACE:
         case MODE_TRAINEE:
         case MODE_TRAINER:
-            
-            if (CHECK_STATUS(g_byStatus, RTS)) {
-                
-                if (CHECK_STATUS(g_byStatus, NEW_SESSION)) {
-                    g_wOffsetTime = millis();
-                    byteWrite(SEND_HEADER);
-                    CLEAR_STATUS(g_byStatus, NEW_SESSION);
-                } else {
-                    byteWrite(SEND_DATA);
+        {
+            uint16_t currentMillis = millis();
+            if(currentMillis - g_wDataMillis > 100) {
+                g_wDataMillis = currentMillis;
+                if (CHECK_STATUS(g_byStatus, RTS)) {
+                    
+                    if (CHECK_STATUS(g_byStatus, NEW_SESSION)) {
+                        g_wOffsetTime = millis();
+                        byteWrite(SEND_HEADER);
+                        CLEAR_STATUS(g_byStatus, NEW_SESSION);
+                    } else {
+                        byteWrite(SEND_DATA);
+                    }
+                    CLEAR_STATUS(g_byStatus, RTS);
                 }
-                CLEAR_STATUS(g_byStatus, RTS);
+                
             }
+            
+        }
             
             break;
         default:

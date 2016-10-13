@@ -21,9 +21,10 @@
 #define PIN53 53
 #define PIN51 51
 #define PIN49 49
-#define ALS_BUTTON_PIN 47
-#define POT_PIN 7
 #endif
+
+
+#define POT_PIN 7
 
 #define USOUND_IN   A0
 #define ALSPIN3     9
@@ -31,6 +32,7 @@
 #define ALSPIN1     11
 #define BREAK_LT    12
 #define USOUND_LT   13
+#define ALS_BUTTON_PIN 47
 
 #define ADS_INT1    48
 #define ADS_INT2    50
@@ -52,6 +54,8 @@
 #define numberOfHours(_time_) ((_time_ % SECS_PER_DAY) / SECS_PER_HOUR)
 #define elapsedDays(_time_) ( _time_ / SECS_PER_DAY)
 
+#define HALF_SECOND     500
+#define THREE_SECONDS   3000
 #define TEN_SECONDS     10000
 #define THIRTY_SECONDS  30000
 
@@ -74,7 +78,7 @@
 #define MODE_ERPS       5
 
 /** Protocols **/
-#define SEND_BATTERY    27
+#define SEND_IDLE    27
 #define SEND_DATA       1
 #define SEND_HEADER     2
 #define SEND_ERPS       3
@@ -86,8 +90,8 @@
 
 /** ALS variables **/
 #define DEBOUNCE_DELAY 200
-
 #define FLASH_INTERVAL 100
+
 extern uint8_t g_byChangedToSimple;
 extern uint32_t g_wLastDebounceTime;
 extern uint8_t g_byFlashingPattern;
@@ -106,17 +110,21 @@ extern uint32_t g_wOffsetTime;
 extern struct timeStamp g_TimeStamp;
 extern union Floater32_t g_fLatitude;
 extern union Floater32_t g_fLongitude;
+
 extern uint8_t g_byBatteryLevel;
+extern uint8_t g_byThreat;
 
 /* Bluetooth variables */
 extern uint8_t g_bySendPacket[BUFFER_SIZE];
-extern int8_t g_byRecvPacket;
+extern uint8_t g_byRecvPacket[BUFFER_SIZE];
 extern uint8_t g_byBTSendFlag;
+extern uint8_t g_byBTRecvFlag;
 
 /* Program variables */
 extern uint8_t g_byNextUpdate;
 extern uint8_t g_byMode;
 extern uint32_t g_wIdleMillis;
+extern uint32_t g_wDataMillis;
 extern uint8_t g_byStatus;
 /* Bitfield variable
  Bit 0: Ready To Send - Only sends data when RTS is high. RTS goes low after sending data.
@@ -144,7 +152,7 @@ extern uint8_t g_byStatus;
 
 
 /** main functions **/
-int8_t btListen(void);
+void btListen(void);
 void btSend(void);
 void setupALS(void);
 

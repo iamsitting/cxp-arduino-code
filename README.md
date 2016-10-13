@@ -6,9 +6,14 @@ This project contains the embedded software for the Cycle X-Pro. This project is
 
 ### Version
 
-2.0.10
+2.0.11
 
 ### Most Recent Changes
+
+2.0.11
+- Threat flag added, not tested
+- New BT receiving routine
+- Changed SEND_BATTERY to SEND_IDLE
 
 2.0.10
 - Rewrote SEND_DATA
@@ -17,13 +22,6 @@ This project contains the embedded software for the Cycle X-Pro. This project is
 2.0.9
 - ALS is tested
 - Testing Battery Indicator on SEND_DATA
-
-2.0.8
-- Button Interrupt tested
-
-2.0.7
-- Bugfix: ALS Flashing Patter 3&4
-- ERPS is fully tested
 
 ## Code Design
 

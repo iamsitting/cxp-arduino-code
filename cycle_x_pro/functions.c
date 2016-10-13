@@ -52,6 +52,7 @@ void test_updateData(){
 }
 void updateADS(){
     //Accident detection code here
+    g_byThreat = 0;
 }
 void updateSpeed(){
     //Speed from GPS/Acc. Here
@@ -68,9 +69,9 @@ void byteWrite(uint8_t protocol){
     uint16_t checksum = 0;
     
     switch(protocol){
-        case SEND_BATTERY:
+        case SEND_IDLE:
             packet[0] = g_byBatteryLevel;
-            packet[1] = 1;
+            packet[1] = g_byThreat;
             packet[2] = 2;
             packet[3] = 3;
             packet[4] = 4;
@@ -91,37 +92,38 @@ void byteWrite(uint8_t protocol){
             
             //TODO: Handle this on the App
             packet[0] = g_byBatteryLevel;
+            packet[1] = g_byThreat;
             
-            packet[1] = g_TimeStamp.hour;
-            packet[2] = g_TimeStamp.minute;
-            packet[3] = g_TimeStamp.second.by.te3;
-            packet[4] = g_TimeStamp.second.by.te2;
-            packet[5] = g_TimeStamp.second.by.te1;
-            packet[6] = g_TimeStamp.second.by.te0;
+            packet[2] = g_TimeStamp.hour;
+            packet[3] = g_TimeStamp.minute;
+            packet[4] = g_TimeStamp.second.by.te3;
+            packet[5] = g_TimeStamp.second.by.te2;
+            packet[6] = g_TimeStamp.second.by.te1;
+            packet[7] = g_TimeStamp.second.by.te0;
             
-            packet[7] = g_fMetric1.by.te3;
-            packet[8] = g_fMetric1.by.te2;
-            packet[9] = g_fMetric1.by.te1;
-            packet[10] = g_fMetric1.by.te0;
+            packet[8] = g_fMetric1.by.te3;
+            packet[9] = g_fMetric1.by.te2;
+            packet[10] = g_fMetric1.by.te1;
+            packet[11] = g_fMetric1.by.te0;
             
-            packet[11] = g_fMetric2.by.te3;
-            packet[12] = g_fMetric2.by.te2;
-            packet[13] = g_fMetric2.by.te1;
-            packet[14] = g_fMetric2.by.te0;
+            packet[12] = g_fMetric2.by.te3;
+            packet[13] = g_fMetric2.by.te2;
+            packet[14] = g_fMetric2.by.te1;
+            packet[15] = g_fMetric2.by.te0;
             
-            packet[15] = g_fMetric3.by.te3;
-            packet[16] = g_fMetric3.by.te2;
-            packet[17] = g_fMetric3.by.te1;
-            packet[18] = g_fMetric3.by.te0;
+            packet[16] = g_fMetric3.by.te3;
+            packet[17] = g_fMetric3.by.te2;
+            packet[18] = g_fMetric3.by.te1;
+            packet[19] = g_fMetric3.by.te0;
             
             
-            for(c = 0; c<19; c++){
+            for(c = 0; c<20; c++){
                 checksum += packet[c];
             }
             
-            packet[19] = checksum & 0xFF;
-            packet[20] = protocol;
-            packet[21] = 0xA7;
+            packet[20] = checksum & 0xFF;
+            packet[21] = protocol;
+            packet[22] = 0xA7;
             
             break;
         case SEND_HEADER:
