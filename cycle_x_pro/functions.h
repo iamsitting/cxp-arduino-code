@@ -22,13 +22,13 @@ extern "C" {
     /** Metric Functions **/
     
     //This is where we'll define the functions to
-    void test_getData(void);
-    void test_getERPS(void);
-    void test_updateData(void);
+    void getERPS(void);
+    void updateData(void);
     void getTime(void);
     void getSpeed(void);
     void updateADS(void);
     void udpateBatteryLevel(void);
+    void getRaceData(void);
     
 
     

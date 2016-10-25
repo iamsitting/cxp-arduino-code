@@ -6,22 +6,20 @@ This project contains the embedded software for the Cycle X-Pro. This project is
 
 ### Version
 
-2.0.11
+2.1.0
 
 ### Most Recent Changes
+
+2.1.0
+- Added Race Mode functionality - untested
 
 2.0.11
 - Threat flag added, not tested
 - New BT receiving routine
-- Changed SEND_BATTERY to SEND_IDLE
 
 2.0.10
 - Rewrote SEND_DATA
 - Battery Indicator tested
-
-2.0.9
-- ALS is tested
-- Testing Battery Indicator on SEND_DATA
 
 ## Code Design
 

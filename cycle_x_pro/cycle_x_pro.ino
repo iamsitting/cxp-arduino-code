@@ -7,7 +7,7 @@
 // 				team14
 //
 // Date			9/22/16 9:40 AM
-// Version		2.0.11
+// Version		2.1.0
 //
 // Copyright	© Carlos Salamanca, 2016
 // Licence		MIT
@@ -25,11 +25,13 @@
 
 /** Declare variables **/
 struct timeStamp g_TimeStamp;
-Floater32_t g_fMetric1;
-Floater32_t g_fMetric2;
-Floater32_t g_fMetric3;
+Floater32_t g_fSpeed;
+Floater32_t g_fDistance;
+Floater32_t g_fCalories;
 Floater32_t g_fLatitude;
 Floater32_t g_fLongitude;
+Floater32_t g_fOppSpeed;
+Floater32_t g_fOppDistance;
 uint8_t g_byBatteryLevel = 90;
 uint8_t g_byThreat = 0;
 
@@ -161,7 +163,7 @@ void loop() {
 //#endif
     
     //update data
-    test_updateData();
+    updateData();
     
     //Send message to App
     btSend();
@@ -230,7 +232,6 @@ void btSend() {
             
             //RTD Modes
         case MODE_SOLO:
-        case MODE_RACE:
         case MODE_TRAINEE:
         case MODE_TRAINER:
         {
@@ -252,13 +253,34 @@ void btSend() {
             }
             
         }
+            break;
+        case MODE_RACE:
+        {
+            uint16_t currentMillis = millis();
+            if(currentMillis - g_wDataMillis > 100) {
+                g_wDataMillis = currentMillis;
+                if (CHECK_STATUS(g_byStatus, RTS)) {
+                    
+                    if (CHECK_STATUS(g_byStatus, NEW_SESSION)) {
+                        g_wOffsetTime = millis();
+                        byteWrite(SEND_HEADER);
+                        CLEAR_STATUS(g_byStatus, NEW_SESSION);
+                    } else {
+                        byteWrite(SEND_RACE);
+                    }
+                    CLEAR_STATUS(g_byStatus, RTS);
+                }
+                
+            }
             
+        }
             break;
         default:
             __asm__("nop\n\t");
             break;
     }
     
+    /** BT Sending function **/
     if(g_byBTSendFlag){
         HC06.write(g_bySendPacket, BUFFER_SIZE);
         g_byBTSendFlag = 0;

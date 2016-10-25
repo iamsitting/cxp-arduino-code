@@ -78,10 +78,11 @@
 #define MODE_ERPS       5
 
 /** Protocols **/
-#define SEND_IDLE    27
+#define SEND_IDLE       27
 #define SEND_DATA       1
 #define SEND_HEADER     2
 #define SEND_ERPS       3
+#define SEND_RACE       4
 
 /** BT definitions **/
 #define BAUD_RATE   9600
@@ -103,13 +104,17 @@ extern uint8_t g_byFlashingCount;
 
 
 /* Metric variables */
-extern union Floater32_t g_fMetric1;
-extern union Floater32_t g_fMetric2;
-extern union Floater32_t g_fMetric3;
-extern uint32_t g_wOffsetTime;
-extern struct timeStamp g_TimeStamp;
+extern union Floater32_t g_fSpeed;
+extern union Floater32_t g_fDistance;
+extern union Floater32_t g_fCalories;
 extern union Floater32_t g_fLatitude;
 extern union Floater32_t g_fLongitude;
+extern union Floater32_t g_fOppSpeed;
+extern union Floater32_t g_fOppDistance;
+
+extern uint32_t g_wOffsetTime;
+extern struct timeStamp g_TimeStamp;
+
 
 extern uint8_t g_byBatteryLevel;
 extern uint8_t g_byThreat;

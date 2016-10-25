@@ -1,5 +1,8 @@
 ## Log
 
+2.1.0
+- Added Race Mode functionality - untested
+
 2.0.11
 - Threat flag added, not tested
 - New BT receiving routine
