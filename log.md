@@ -1,5 +1,8 @@
 ## Log
 
+2.2.0
+- Added TRIO functionality - untested
+
 2.1.0
 - Added Race Mode functionality - untested
 

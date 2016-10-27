@@ -12,6 +12,18 @@
 #include "globals.h"
 #include "types.h"
 
+#define DEBOUNCE_DELAY 200
+#define FLASH_INTERVAL 100
+
+extern uint8_t g_byChangedToSimple;
+extern uint32_t g_wLastDebounceTime;
+extern uint8_t g_byFlashingPattern;
+extern uint32_t g_wPreviousMillis;
+extern uint8_t g_byALSPin1State;
+extern uint8_t g_byALSPin2State;
+extern uint8_t g_byALSPin3State;
+extern uint8_t g_byFlashingCount;
+
 #ifdef __cplusplus
 extern "C" {
 #endif //__cplusplus

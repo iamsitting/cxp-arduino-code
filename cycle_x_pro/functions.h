@@ -34,6 +34,7 @@ extern "C" {
     
     /** Packet Functions **/
     void byteWrite(uint8_t protocol);
+    void btParse();
     
 #ifdef __cplusplus
 }

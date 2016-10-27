@@ -43,6 +43,7 @@
 #define HC06        Serial2
 #define XBPRO       Serial3
 
+/** End Pin definitions **/
 
 /** time formatting **/
 #define SECS_PER_MIN (60UL)
@@ -88,19 +89,6 @@
 #define BAUD_RATE   9600
 #define BUFFER_SIZE 32
 
-
-/** ALS variables **/
-#define DEBOUNCE_DELAY 200
-#define FLASH_INTERVAL 100
-
-extern uint8_t g_byChangedToSimple;
-extern uint32_t g_wLastDebounceTime;
-extern uint8_t g_byFlashingPattern;
-extern uint32_t g_wPreviousMillis;
-extern uint8_t g_byALSPin1State;
-extern uint8_t g_byALSPin2State;
-extern uint8_t g_byALSPin3State;
-extern uint8_t g_byFlashingCount;
 
 
 /* Metric variables */
@@ -160,6 +148,7 @@ extern uint8_t g_byStatus;
 void btListen(void);
 void btSend(void);
 void setupALS(void);
+void XBeeReceive(void);
 
 
 #endif /* globals_h */

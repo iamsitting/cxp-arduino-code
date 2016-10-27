@@ -120,7 +120,7 @@ void byteWrite(uint8_t protocol){
             packet[8] = g_fSpeed.by.te3;
             packet[9] = g_fSpeed.by.te2;
             packet[10] = g_fSpeed.by.te1;
-            packet[11] = g_fSpeed.by.te3;
+            packet[11] = g_fSpeed.by.te0;
             
             //distance
             packet[12] = g_fDistance.by.te3;
@@ -270,4 +270,68 @@ void byteWrite(uint8_t protocol){
     }
     
     g_byBTSendFlag = 1;
+}
+
+void btParse(){
+
+    switch (g_byRecvPacket[0]) {
+            //Apply correct Mode of operation and System status
+        case 0x43: //C - BT Connected
+        case 0x63:
+            SET_STATUS(g_byStatus, RTS);
+            SET_STATUS(g_byStatus, BTCON); //clear on app/BT destroy
+            break;
+        case 0x45: //E - ERPS ACK
+        case 0x65:
+            SET_STATUS(g_byStatus, ERPS);
+            break;
+        case 0x4B: //K - Send next sample
+        case 0x6B:
+            SET_STATUS(g_byStatus, RTS);
+            break;
+        case 0x4E: //N - Retry New Session
+        case 0x6E:
+            SET_STATUS(g_byStatus, RTS);
+            SET_STATUS(g_byStatus, NEW_SESSION);
+            break;
+        case 0x51: //Q - End Session
+        case 0x71:
+            g_byMode = MODE_IDLE;
+            CLEAR_STATUS(g_byStatus, NEW_SESSION);
+            CLEAR_STATUS(g_byStatus, ERPS);
+            SET_STATUS(g_byStatus, RTS);
+            break;
+        case 0x52: //R - Reset ERPS
+        case 0x72:
+            g_byMode = MODE_IDLE;
+            CLEAR_STATUS(g_byStatus, ERPS);
+            break;
+        case 0x57: //W - New Solo Session
+        case 0x77:
+            g_byMode = MODE_SOLO;
+            SET_STATUS(g_byStatus, NEW_SESSION);
+            SET_STATUS(g_byStatus, RTS);
+            break;
+        case 0x58: //X - New Trainee Session
+        case 0x78:
+            g_byMode = MODE_TRAINEE;
+            SET_STATUS(g_byStatus, NEW_SESSION);
+            SET_STATUS(g_byStatus, RTS);
+            break;
+        case 0x59: //Y - New Trainer Session
+        case 0x79:
+            g_byMode = MODE_TRAINER;
+            SET_STATUS(g_byStatus, NEW_SESSION);
+            SET_STATUS(g_byStatus, RTS);
+            break;
+        case 0x5A: //Z - New Race Session
+        case 0x7A:
+            g_byMode = MODE_RACE;
+            SET_STATUS(g_byStatus, NEW_SESSION);
+            SET_STATUS(g_byStatus, RTS);
+            break;
+        default:
+            //do nothing
+            __asm__("nop\n\t");
+    }
 }
