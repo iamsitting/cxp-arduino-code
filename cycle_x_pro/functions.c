@@ -10,6 +10,9 @@
 #include "functions.h"
 #include "testing.h"
 
+float32_t generateData(uint8_t index){
+    return sine_test[index];
+}
 //We will write data processing functions here
 
 void getTime(){
@@ -56,8 +59,9 @@ void updateADS(){
 }
 void updateSpeed(){
     //Speed alg.
-    g_fSpeed.bits32 = (float) analogRead(POT_PIN) * 9.77517;
-    
+    g_fSpeed.bits32 = generateData(ind);
+    g_fOppSpeed.bits32 = generateData((ind+16) % 32);
+    ind = (ind + 1 >= 32 ? 0: ind + 1);
 }
 void updateDistance(){
     //Distance alg.
@@ -74,8 +78,8 @@ void getERPS(){
 }
 void getRaceData(){
     //get race data
-    g_fOppSpeed.bits32 = g_fCalories.bits32 + 1;
-    g_fOppDistance.bits32 = g_fOppSpeed.bits32 + 1;
+    //g_fOppSpeed.bits32 = generateOppData();
+    //g_fOppDistance.bits32 = g_fOppSpeed.bits32 + 1;
 }
 void byteWrite(uint8_t protocol){
     uint8_t packet[BUFFER_SIZE];
@@ -85,181 +89,189 @@ void byteWrite(uint8_t protocol){
     
     switch(protocol){
         case SEND_IDLE:
-            packet[0] = g_byBatteryLevel;
-            packet[1] = g_byThreat;
-            packet[2] = 2;
-            packet[3] = 3;
-            packet[4] = 4;
-            packet[5] = 5;
-            packet[6] = 6;
+            packet[i++] = 0xA7;
+            packet[i++] = protocol;
+            packet[i++] = g_byBatteryLevel;
+            packet[i++]= g_byThreat;
+            packet[i++] = 2;
+            packet[i++] = 3;
+            packet[i++] = 4;
+            packet[i++] = 5;
+            packet[i++] = 6;
             
-            for(c = 0; c < 7; c++){
+            for(c = 0; c < i; c++){
                 checksum += packet[c];
             }
             
-            packet[7] = checksum & 0xFF;
-            packet[8] = protocol;
-            packet[9] = 0xA7;
-            
+            packet[i] = checksum & 0xFF;
+            //10
             break;
         case SEND_DATA:
             getTime();
             
-            packet[0] = g_byBatteryLevel;
-            packet[1] = g_byThreat;
+            packet[i++] = 0xA7;
+            packet[i++] = protocol;
+            
+            packet[i++] = g_byBatteryLevel;
+            packet[i++] = g_byThreat;
             
             //time
-            packet[2] = g_TimeStamp.hour;
-            packet[3] = g_TimeStamp.minute;
-            packet[4] = g_TimeStamp.second.by.te3;
-            packet[5] = g_TimeStamp.second.by.te2;
-            packet[6] = g_TimeStamp.second.by.te1;
-            packet[7] = g_TimeStamp.second.by.te0;
+            packet[i++] = g_TimeStamp.hour;
+            packet[i++] = g_TimeStamp.minute;
+            packet[i++] = g_TimeStamp.second.by.te3;
+            packet[i++] = g_TimeStamp.second.by.te2;
+            packet[i++] = g_TimeStamp.second.by.te1;
+            packet[i++] = g_TimeStamp.second.by.te0;
             
             //speed
-            packet[8] = g_fSpeed.by.te3;
-            packet[9] = g_fSpeed.by.te2;
-            packet[10] = g_fSpeed.by.te1;
-            packet[11] = g_fSpeed.by.te0;
+            packet[i++] = g_fSpeed.by.te3;
+            packet[i++] = g_fSpeed.by.te2;
+            packet[i++] = g_fSpeed.by.te1;
+            packet[i++] = g_fSpeed.by.te0;
             
             //distance
-            packet[12] = g_fDistance.by.te3;
-            packet[13] = g_fDistance.by.te2;
-            packet[14] = g_fDistance.by.te1;
-            packet[15] = g_fDistance.by.te0;
+            packet[i++] = g_fDistance.by.te3;
+            packet[i++] = g_fDistance.by.te2;
+            packet[i++] = g_fDistance.by.te1;
+            packet[i++] = g_fDistance.by.te0;
             
             //calories
-            packet[16] = g_fCalories.by.te3;
-            packet[17] = g_fCalories.by.te2;
-            packet[18] = g_fCalories.by.te1;
-            packet[19] = g_fCalories.by.te0;
+            packet[i++] = g_fCalories.by.te3;
+            packet[i++] = g_fCalories.by.te2;
+            packet[i++] = g_fCalories.by.te1;
+            packet[i++] = g_fCalories.by.te0;
             
             
-            for(c = 0; c<20; c++){
+            for(c = 0; c<i; c++){
                 checksum += packet[c];
             }
             
-            packet[20] = checksum & 0xFF;
-            packet[21] = protocol;
-            packet[22] = 0xA7;
+            packet[i] = checksum & 0xFF;
+            //23
             
             break;
         case SEND_HEADER:
             
-            packet[0] = 0x74; //t
-            packet[1] = 0x69; //i
-            packet[2] = 0x6D; //m
-            packet[3] = 0x65; //e
-            packet[4] = 0x2C; //,
+            packet[i++] = 0xA7;
+            packet[i++] = protocol;
             
-            packet[5] = 0x73; //s
-            packet[6] = 0x70; //p
-            packet[7] = 0x65; //e
-            packet[8] = 0x65; //e
-            packet[9] = 0x64; //d
-            packet[10] = 0x2C; //,
+            packet[i++] = 0x74; //t
+            packet[i++] = 0x69; //i
+            packet[i++] = 0x6D; //m
+            packet[i++] = 0x65; //e
+            packet[i++] = 0x2C; //,
             
-            packet[11] = 0x64; //d
-            packet[12] = 0x69; //i
-            packet[13] = 0x73; //s
-            packet[14] = 0x74; //t
-            packet[15] = 0x61; //a
-            packet[16] = 0x6E; //n
-            packet[17] = 0x63; //c
-            packet[18] = 0x65; //e
-            packet[19] = 0x2C; //,
+            packet[i++] = 0x73; //s
+            packet[i++] = 0x70; //p
+            packet[i++] = 0x65; //e
+            packet[i++] = 0x65; //e
+            packet[i++] = 0x64; //d
+            packet[i++] = 0x2C; //,
             
-            packet[20] = 0x63; //c
-            packet[21] = 0x61; //a
-            packet[22] = 0x6C; //l
-            packet[23] = 0x6F; //o
-            packet[24] = 0x72; //r
-            packet[25] = 0x69; //i
-            packet[26] = 0x65; //e
-            packet[27] = 0x73; //s
+            packet[i++] = 0x64; //d
+            packet[i++] = 0x69; //i
+            packet[i++] = 0x73; //s
+            packet[i++] = 0x74; //t
+            packet[i++] = 0x61; //a
+            packet[i++] = 0x6E; //n
+            packet[i++] = 0x63; //c
+            packet[i++] = 0x65; //e
+            packet[i++] = 0x2C; //,
             
-            for(c = 0; c<27; c++){
+            packet[i++] = 0x63; //c
+            packet[i++] = 0x61; //a
+            packet[i++] = 0x6C; //l
+            packet[i++] = 0x6F; //o
+            packet[i++] = 0x72; //r
+            packet[i++] = 0x69; //i
+            packet[i++] = 0x65; //e
+            packet[i++] = 0x73; //s
+            
+            for(c = 0; c<i; c++){
                 checksum += packet[c];
             }
-            packet[28] = checksum & 0xFF;
+            packet[i] = checksum & 0xFF;
+            //31
             
-            packet[29] = protocol;
-            packet[30] = 0xA7;
             
             break;
         case SEND_ERPS:
             getERPS();
             
-            packet[0] = g_fLatitude.by.te3;
-            packet[1] = g_fLatitude.by.te2;
-            packet[2] = g_fLatitude.by.te1;
-            packet[3] = g_fLatitude.by.te0;
+            packet[i++] = 0xA7;
+            packet[i++] = protocol;
             
-            packet[4] = g_fLongitude.by.te3;
-            packet[5] = g_fLongitude.by.te2;
-            packet[6] = g_fLongitude.by.te1;
-            packet[7] = g_fLongitude.by.te0;
+            packet[i++] = g_fLatitude.by.te3;
+            packet[i++] = g_fLatitude.by.te2;
+            packet[i++] = g_fLatitude.by.te1;
+            packet[i++] = g_fLatitude.by.te0;
             
-            for(c = 0; c<8; c++)
+            packet[i++] = g_fLongitude.by.te3;
+            packet[i++] = g_fLongitude.by.te2;
+            packet[i++] = g_fLongitude.by.te1;
+            packet[i++] = g_fLongitude.by.te0;
+            
+            for(c = 0; c<i; c++)
             {
                 checksum += packet[c];
             }
-            packet[8] = checksum & 0xFF;
-            packet[9] = protocol;
-            packet[10] = 0xA7;
+            packet[i] = checksum & 0xFF;
+            //11
             break;
         case SEND_RACE:
             getTime();
-            getRaceData();
+            //getRaceData();
             
-            packet[0] = g_byBatteryLevel;
-            packet[1] = g_byThreat;
+            packet[i++] = 0xA7;
+            packet[i++] = protocol;
+            
+            packet[i++] = g_byBatteryLevel;
+            packet[i++] = g_byThreat;
             
             //time
-            packet[2] = g_TimeStamp.hour;
-            packet[3] = g_TimeStamp.minute;
-            packet[4] = g_TimeStamp.second.by.te3;
-            packet[5] = g_TimeStamp.second.by.te2;
-            packet[6] = g_TimeStamp.second.by.te1;
-            packet[7] = g_TimeStamp.second.by.te0;
+            packet[i++] = g_TimeStamp.hour;
+            packet[i++] = g_TimeStamp.minute;
+            packet[i++] = g_TimeStamp.second.by.te3;
+            packet[i++] = g_TimeStamp.second.by.te2;
+            packet[i++] = g_TimeStamp.second.by.te1;
+            packet[i++] = g_TimeStamp.second.by.te0;
             
             //speed
-            packet[8] = g_fSpeed.by.te3;
-            packet[9] = g_fSpeed.by.te2;
-            packet[10] = g_fSpeed.by.te1;
-            packet[11] = g_fSpeed.by.te3;
+            packet[i++] = g_fSpeed.by.te3;
+            packet[i++] = g_fSpeed.by.te2;
+            packet[i++] = g_fSpeed.by.te1;
+            packet[i++] = g_fSpeed.by.te3;
             
             //distance
-            packet[12] = g_fDistance.by.te3;
-            packet[13] = g_fDistance.by.te2;
-            packet[14] = g_fDistance.by.te1;
-            packet[15] = g_fDistance.by.te0;
+            packet[i++] = g_fDistance.by.te3;
+            packet[i++] = g_fDistance.by.te2;
+            packet[i++] = g_fDistance.by.te1;
+            packet[i++] = g_fDistance.by.te0;
             
             //calories
-            packet[16] = g_fCalories.by.te3;
-            packet[17] = g_fCalories.by.te2;
-            packet[18] = g_fCalories.by.te1;
-            packet[19] = g_fCalories.by.te0;
+            packet[i++] = g_fCalories.by.te3;
+            packet[i++] = g_fCalories.by.te2;
+            packet[i++] = g_fCalories.by.te1;
+            packet[i++] = g_fCalories.by.te0;
             
             //opponent-speed
-            packet[20] = g_fOppSpeed.by.te3;
-            packet[21] = g_fOppSpeed.by.te2;
-            packet[22] = g_fOppSpeed.by.te1;
-            packet[23] = g_fOppSpeed.by.te0;
+            packet[i++] = g_fOppSpeed.by.te3;
+            packet[i++] = g_fOppSpeed.by.te2;
+            packet[i++] = g_fOppSpeed.by.te1;
+            packet[i++] = g_fOppSpeed.by.te0;
             
             //opponent-distance
-            packet[24] = g_fOppDistance.by.te3;
-            packet[25] = g_fOppDistance.by.te2;
-            packet[26] = g_fOppDistance.by.te1;
-            packet[27] = g_fOppDistance.by.te0;
+            packet[i++] = g_fOppDistance.by.te3;
+            packet[i++] = g_fOppDistance.by.te2;
+            packet[i++] = g_fOppDistance.by.te1;
+            packet[i++] = g_fOppDistance.by.te0;
             
-            for(c = 0; c<28; c++)
+            for(c = 0; c<i; c++)
             {
                 checksum += packet[c];
             }
-            packet[29] = checksum & 0xFF;
-            packet[30] = protocol;
-            packet[31] = 0xA7;
+            packet[i] = checksum & 0xFF;
+            //31
             break;
         default:
             break;

@@ -7,7 +7,7 @@
 // 				team14
 //
 // Date			9/22/16 9:40 AM
-// Version		2.2.0
+// Version		2.2.1
 //
 // Copyright	© Carlos Salamanca, 2016
 // Licence		MIT
@@ -47,6 +47,7 @@ uint8_t g_byNextUpdate = 0;
 uint8_t g_byMode = MODE_IDLE;
 uint32_t g_wIdleMillis = 0;
 uint32_t g_wDataMillis = 0;
+uint8_t g_byMisses = 0;
 
 //ALS
 uint8_t g_byChangedToSimple = 0;
@@ -70,6 +71,9 @@ Floater32_t g_fOppLatitude;
 
 /** Setup Arduino objects **/
 //#define ALS_TEST
+uint8_t ind = 0;
+float32_t sine_test[32] = {512,611,707,796,873,937,984,1013,1023,1013,984,937,873,796,707,611,512,412,316,227,150,86,39,10,0,10,39,86,150,227,316,412};
+
 
 void setup() {
     HC06.begin(BAUD_RATE);
@@ -120,7 +124,7 @@ void loop() {
     updateData();
     
     //5. receive trio
-    XBeeReceive();
+    //XBeeReceive();
     
     //5. Listen for TRIO
     if(g_byXbeeRecvFlag){
@@ -213,7 +217,13 @@ void btSend() {
                     } else {
                         byteWrite(SEND_DATA);
                     }
+                    g_byMisses = 0;
                     CLEAR_STATUS(g_byStatus, RTS);
+                } else {
+                    g_byMisses++;
+                    if(g_byMisses > MISSES_ALLOWED){
+                        SET_STATUS(g_byStatus, RTS);
+                    }
                 }
                 
             }
@@ -234,7 +244,13 @@ void btSend() {
                     } else {
                         byteWrite(SEND_RACE);
                     }
+                    g_byMisses = 0;
                     CLEAR_STATUS(g_byStatus, RTS);
+                } else {
+                    g_byMisses++;
+                    if(g_byMisses > MISSES_ALLOWED){
+                        SET_STATUS(g_byStatus, RTS);
+                    }
                 }
                 
             }

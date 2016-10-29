@@ -15,6 +15,8 @@
 #define TEST_ISR
 #define ALS_TEST
 //#define TEST_ERPS
+extern float32_t sine_test[32];
+extern uint8_t ind;
 
 /** Pin definitions **/
 #ifdef TEST_CODE
@@ -88,6 +90,7 @@
 /** BT definitions **/
 #define BAUD_RATE   9600
 #define BUFFER_SIZE 32
+#define MISSES_ALLOWED 20
 
 
 

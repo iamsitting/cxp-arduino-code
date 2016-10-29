@@ -1,5 +1,9 @@
 ## Log
 
+2.2.1
+- Race Mode Tested
+- Count misses for reliability
+
 2.2.0
 - Added TRIO functionality - untested
 

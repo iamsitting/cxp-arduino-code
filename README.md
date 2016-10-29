@@ -6,9 +6,13 @@ This project contains the embedded software for the Cycle X-Pro. This project is
 
 ### Version
 
-2.2.0
+2.2.1
 
 ### Most Recent Changes
+
+2.2.1
+- Race Mode Tested
+- Count misses for reliability
 
 2.2.0
 - Added TRIO functionality - untested

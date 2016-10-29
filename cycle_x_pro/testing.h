@@ -12,6 +12,7 @@
 #include "globals.h"
 
 #ifdef TEST_CODE
+
 void feedbackLED() {
     switch (g_byMode) {
         case MODE_IDLE:
