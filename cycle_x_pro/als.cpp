@@ -1,5 +1,5 @@
 //
-//  als.c
+//  als.cpp
 //  cycle-x-pro
 //
 //  Created by Carlos Salamanca on 9/29/16.
@@ -9,6 +9,7 @@
 #include <Arduino.h>
 #include "globals.h"
 #include "als.h"
+#include "rtd.h"
 
 /********************* Written by Tyler Henderson *************************/
 void ALSButton_isr(){
@@ -18,7 +19,7 @@ void ALSButton_isr(){
         if(g_byFlashingPattern < 2) g_byChangedToSimple = 0;
         
 #ifdef TEST_ERPS
-        g_byMode = MODE_ERPS;
+        SET_STATUS(g_byStatus, ERPS);
 #endif //TEST_ERPS
         
         g_wLastDebounceTime = millis();
@@ -149,4 +150,71 @@ void flashingPattern4(){
     }
 }
 
+void getUSThreat(){
+  //Calculate distance from Ultrasonic Sensor
+  int Volt_num;
+  float32_t Vm, d;
+  Volt_num= analogRead(USOUND_IN);
+  Vm = .00080566 * Volt_num; //.00080566 (12bit at 3.3V)//.003223 (10bit at 3.3V)//.004883 (10bit at 5V)
+  d = Vm / 0.006445 / 12; // [ft]
+  if(d < US_MIN_DISTANCE){
+    g_byThreat = 1;
+  } else {
+    g_byThreat = 0;
+  }
+}
+
+void flashRearLEDS() {
+
+    if(g_byThreat){
+        unsigned long currentMillis = millis();
+
+        if (currentMillis - g_wPreviousMillis2 >= REAR_FLASH_INTERVAL) {
+
+            g_wPreviousMillis2 = currentMillis;
+            g_byUsoundLtPinState = ~ g_byUsoundLtPinState;
+            digitalWrite(USOUND_LT, g_byUsoundLtPinState);
+        }
+    } else {
+        if(!g_byUsoundLtPinState){
+            g_byUsoundLtPinState = LOW;
+            digitalWrite(USOUND_LT, g_byUsoundLtPinState);
+        }
+    }
+}
+
+void changeBrakeLight(){
+    float32_t Ax;
+
+    Ax = getAcceleration(X_DIRECTION);
+    if (Ax < 0) {
+        g_byBrakeCounter++;
+
+        if (g_byBrakeCounter >=4){
+            if(!g_byBrakeLtPinState){
+                g_byBrakeLtPinState = HIGH;
+                digitalWrite(BRAKE_LT, g_byBrakeLtPinState);
+            }
+        }
+    }
+    else {
+        if(!g_byBrakeLtPinState){
+            g_byBrakeCounter = 0;
+            g_byBrakeLtPinState = LOW;
+            digitalWrite(BRAKE_LT, g_byBrakeLtPinState);
+        }
+    }
+}
+
+void setupALS(){
+    pinMode(ALSPIN1, OUTPUT);
+    pinMode(ALSPIN2, OUTPUT);
+    pinMode(ALSPIN3, OUTPUT);
+    pinMode(USOUND_LT, OUTPUT);
+    pinMode(BRAKE_LT, OUTPUT);
+    pinMode(USOUND_IN, INPUT);
+    analogReadResolution(12);
+    pinMode(ALS_BUTTON_PIN, INPUT);
+    attachInterrupt(digitalPinToInterrupt(ALS_BUTTON_PIN), ALSButton_isr, RISING);
+}
 /********************* Written by Tyler Henderson *************************/

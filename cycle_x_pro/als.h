@@ -14,15 +14,24 @@
 
 #define DEBOUNCE_DELAY 200
 #define FLASH_INTERVAL 100
+#define REAR_FLASH_INTERVAL 100
+
+#define US_MIN_DISTANCE 30
 
 extern uint8_t g_byChangedToSimple;
 extern uint32_t g_wLastDebounceTime;
 extern uint8_t g_byFlashingPattern;
 extern uint32_t g_wPreviousMillis;
+extern uint32_t g_wPreviousMillis2;
 extern uint8_t g_byALSPin1State;
 extern uint8_t g_byALSPin2State;
 extern uint8_t g_byALSPin3State;
+extern uint8_t g_byUsoundLtPinState;
 extern uint8_t g_byFlashingCount;
+extern uint8_t g_byBatteryLevel;
+extern uint8_t g_byThreat;
+extern uint8_t g_byBrakeCounter;
+extern uint8_t g_byBrakeLtPinState;
 
 #ifdef __cplusplus
 extern "C" {
@@ -38,7 +47,11 @@ extern "C" {
     void flashingPattern2(void);
     void flashingPattern3(void);
     void flashingPattern4(void);
+    void flashRearLEDS(void);
     void ALSButton_isr(void);
+    void getUSThreat(void);
+    void setupALS(void);
+    void changeBrakeLight(void);
     
     
 #ifdef __cplusplus

@@ -1,5 +1,5 @@
 //
-//  functions.c
+//  functions.cpp
 //  cycle-x-pro
 //
 //  Created by Carlos Salamanca on 9/22/16.
@@ -8,7 +8,9 @@
 #include <Arduino.h>
 #include "globals.h"
 #include "functions.h"
-#include "testing.h"
+#include "rtd.h"
+#include "als.h"
+#include "trio.h"
 
 float32_t generateData(uint8_t index){
     return sine_test[index];
@@ -23,64 +25,55 @@ void getTime(){
     g_TimeStamp.second.bits32 = numberOfSeconds(elapsedTime) + (float32_t)(elapsedMillis % 1000)/1000;
 }
 
+void updateBatteryLevel(){
+    //Battery from Analog pin
+    g_byBatteryLevel = 90;
+}
+
+void getRaceData(){
+  g_fOppSpeed.bits32 = g_fSpeed.bits32 + 10;
+    //get race data
+    //g_fOppSpeed.bits32 = generateOppData();
+    //g_fOppDistance.bits32 = g_fOppSpeed.bits32 + 1;
+}
+
 void updateData(){
     
     switch(g_byNextUpdate){
         case 0:
-            updateBatteryLevel();
+            getSpeed();
+            getDistance();
             g_byNextUpdate++;
             break;
         case 1:
-            updateSpeed();
+            //TODO: add to als
+            updateBatteryLevel();
             g_byNextUpdate++;
             break;
         case 2:
-            updateDistance();
+            getCalories();
             g_byNextUpdate++;
             break;
         case 3:
-            updateCalories();
+            //TODO: getUSThread
             g_byNextUpdate++;
             break;
         case 4:
-            updateADS();
+            getLocation();
+            g_byNextUpdate++;
+            break;
+        case 5:
+            getUSThreat();
+            g_byNextUpdate++;
+            break;
+        case 6:
+            getADS();
         default:
             g_byNextUpdate = 0;
             
     }
 }
-void updateBatteryLevel(){
-    //Battery from Analog pin
-    g_byBatteryLevel = 90;
-}
-void updateADS(){
-    //Accident detection code here
-    g_byThreat = 0;
-}
-void updateSpeed(){
-    //Speed alg.
-    g_fSpeed.bits32 = generateData(ind);
-    g_fOppSpeed.bits32 = generateData((ind+16) % 32);
-    ind = (ind + 1 >= 32 ? 0: ind + 1);
-}
-void updateDistance(){
-    //Distance alg.
-    g_fDistance.bits32 = g_fSpeed.bits32 + 1;
-}
-void updateCalories(){
-    //Calories alg.
-    g_fCalories.bits32 = g_fDistance.bits32 + 1;
-}
-void getERPS(){
-    //get location data
-    g_fLatitude.bits32 = (float) 30.6209756;
-    g_fLongitude.bits32 = (float) -96.3395046;
-}
-void getRaceData(){
-    //get race data
-    //g_fOppSpeed.bits32 = generateOppData();
-    //g_fOppDistance.bits32 = g_fOppSpeed.bits32 + 1;
-}
+
 void byteWrite(uint8_t protocol){
     uint8_t packet[BUFFER_SIZE];
     uint8_t i = 0;
@@ -196,7 +189,6 @@ void byteWrite(uint8_t protocol){
             
             break;
         case SEND_ERPS:
-            getERPS();
             
             packet[i++] = 0xA7;
             packet[i++] = protocol;
@@ -220,7 +212,7 @@ void byteWrite(uint8_t protocol){
             break;
         case SEND_RACE:
             getTime();
-            //getRaceData();
+            getRaceData();
             
             packet[i++] = 0xA7;
             packet[i++] = protocol;
@@ -295,7 +287,7 @@ void btParse(){
             break;
         case 0x45: //E - ERPS ACK
         case 0x65:
-            SET_STATUS(g_byStatus, ERPS);
+            SET_STATUS(g_byStatus, ERPS_ACK);
             break;
         case 0x4B: //K - Send next sample
         case 0x6B:
@@ -311,12 +303,14 @@ void btParse(){
             g_byMode = MODE_IDLE;
             CLEAR_STATUS(g_byStatus, NEW_SESSION);
             CLEAR_STATUS(g_byStatus, ERPS);
+            CLEAR_STATUS(g_byStatus, ERPS_ACK);
             SET_STATUS(g_byStatus, RTS);
             break;
         case 0x52: //R - Reset ERPS
         case 0x72:
             g_byMode = MODE_IDLE;
             CLEAR_STATUS(g_byStatus, ERPS);
+            CLEAR_STATUS(g_byStatus, ERPS_ACK);
             break;
         case 0x57: //W - New Solo Session
         case 0x77:
@@ -324,15 +318,15 @@ void btParse(){
             SET_STATUS(g_byStatus, NEW_SESSION);
             SET_STATUS(g_byStatus, RTS);
             break;
-        case 0x58: //X - New Trainee Session
+        case 0x58: //X - New Athelete Session
         case 0x78:
-            g_byMode = MODE_TRAINEE;
+            g_byMode = MODE_ATHLETE;
             SET_STATUS(g_byStatus, NEW_SESSION);
             SET_STATUS(g_byStatus, RTS);
             break;
-        case 0x59: //Y - New Trainer Session
+        case 0x59: //Y - New Coach Session
         case 0x79:
-            g_byMode = MODE_TRAINER;
+            g_byMode = MODE_COACH;
             SET_STATUS(g_byStatus, NEW_SESSION);
             SET_STATUS(g_byStatus, RTS);
             break;

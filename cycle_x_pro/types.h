@@ -12,20 +12,20 @@
 #include <stdint.h>
 
 /* 8-bit integer, may also use char and byte */
-typedef		signed		char	int8_t;
-typedef		unsigned	char	uint8_t;
+typedef     signed      char    int8_t;
+typedef     unsigned    char    uint8_t;
 
 /* 16-bit integer, may also use short and word */
 //for Arduino u/int16_t defined in <stdint.h>
-//typedef		signed 		short	int16_t;
-//typedef		unsigned	short	uint16_t;
+//typedef       signed      short   int16_t;
+//typedef       unsigned    short   uint16_t;
 
 /* 32-bit integer */
-typedef		signed		long	int32_t;
-typedef		unsigned	long	uint32_t;
+typedef     signed      long    int32_t;
+typedef     unsigned    long    uint32_t;
 
 /* 32-bit floating-point */
-typedef					float	float32_t;
+typedef                 float   float32_t;
 
 /** Data Structures **/
 

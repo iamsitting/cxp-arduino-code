@@ -3,38 +3,34 @@
 //
 // Embedded Software for Arduino Due
 //
-// Author 		Carlos Salamanca
-// 				team14
+// Author       Carlos Salamanca
+//              team14
 //
-// Date			9/22/16 9:40 AM
-// Version		2.2.1
+// Date         9/22/16 9:40 AM
+// Version      3.0.0
 //
-// Copyright	© Carlos Salamanca, 2016
-// Licence		MIT
+// Copyright    © Carlos Salamanca, 2016
+// Licence      MIT
 //
 // See         README.md for references
 //
 
 
 #include <Arduino.h>
+#include <TinyGPS++.h>
+#include <BMI160Gen.h>
 
 #include "globals.h"
 #include "functions.h"
 #include "als.h"
 #include "testing.h"
 #include "trio.h"
+#include "rtd.h"
 
 /** Declare variables **/
 
 //metrics
 struct timeStamp g_TimeStamp;
-Floater32_t g_fSpeed;
-Floater32_t g_fDistance;
-Floater32_t g_fCalories;
-Floater32_t g_fLatitude;
-Floater32_t g_fLongitude;
-uint8_t g_byBatteryLevel = 90;
-uint8_t g_byThreat = 0;
 
 //BT, Program
 uint8_t g_bySendPacket[BUFFER_SIZE];
@@ -54,19 +50,40 @@ uint8_t g_byChangedToSimple = 0;
 uint32_t g_wLastDebounceTime = 0;
 uint8_t g_byFlashingPattern = 0;
 uint32_t g_wPreviousMillis = 0;
+uint32_t g_wPreviousMillis2 = 0;
 uint8_t g_byALSPin1State = LOW;
 uint8_t g_byALSPin2State = LOW;
 uint8_t g_byALSPin3State = LOW;
+uint8_t g_byUsoundLtPinState = LOW;
 uint8_t g_byFlashingCount = 0;
+uint8_t g_byBatteryLevel = 90;
+uint8_t g_byThreat = 0;
+uint8_t g_byBrakeCounter = 0;
+uint8_t g_byBrakeLtPinState = 0;
 
 //TRIO
-uint8_t g_byXbeeRecvPacket[XBEE_BUFFER];
+uint8_t g_byXbeeRecvPacket[XBEE_BUFFER_SIZE];
+uint8_t g_byXbeeSendPacket[XBEE_BUFFER_SIZE];
 uint8_t g_byXbeeSendFlag = 0;
 uint8_t g_byXbeeRecvFlag = 0;
 Floater32_t g_fOppSpeed;
 Floater32_t g_fOppDistance;
 Floater32_t g_fOppLongitude;
 Floater32_t g_fOppLatitude;
+
+//ADS & RTD
+Floater32_t g_fSpeed;
+Floater32_t g_fDistance;
+Floater32_t g_fCalories;
+Floater32_t g_fLatitude;
+Floater32_t g_fLongitude;
+TinyGPSPlus gps;
+BMI160GenClass Bmi;
+unsigned long previousMillis_distance = 0;
+unsigned long previousMillis_cal = 0;
+unsigned long previousMillis_dre = 0;
+unsigned long previousMillis_fad = 0;
+uint16_t g_woWeight = 0;
 
 
 /** Setup Arduino objects **/
@@ -96,6 +113,8 @@ void loop() {
 
     //1. switch flashing pattern
     switchFlashingPattern();
+    flashRearLEDS();
+    changeBrakeLight();
 
     //2. listen for commands from App
     btListen();
@@ -137,16 +156,12 @@ void loop() {
     
     //7. Send message to App
     btSend();
-    
-}
 
-void setupALS(){
-    pinMode(ALSPIN1, OUTPUT);
-    pinMode(ALSPIN2, OUTPUT);
-    pinMode(ALSPIN3, OUTPUT);
+    //8. Check ADS
+    if(CHECK_STATUS(g_byStatus, POSS_ACC)){
+        checkFalseAlarm();
+    }
     
-    pinMode(ALS_BUTTON_PIN, INPUT);
-    attachInterrupt(digitalPinToInterrupt(ALS_BUTTON_PIN), ALSButton_isr, RISING);
 }
 
 /** Input and output functions **/
@@ -163,103 +178,100 @@ void btListen() {
 }
 
 void btSend() {
-    switch (g_byMode) {
+    //if ERPS
+    if(CHECK_STATUS(g_byStatus, ERPS)){
+        if(!CHECK_STATUS(g_byStatus, ERPS_ACK)){
+            byteWrite(SEND_ERPS);
             
-            //This is a standby mode
-        case MODE_IDLE:
-        {
-            if(CHECK_STATUS(g_byStatus, BTCON)){
-                uint16_t currentMillis = millis();
-                if(currentMillis - g_wIdleMillis > THREE_SECONDS) {
-                    g_wIdleMillis = currentMillis;
-                    byteWrite(SEND_IDLE);
-                }
-            }
-        }
-            
-            
-            //__asm__("nop\n\t");
-            break;
-            
-            //Activated when ADS detects accident
-        case MODE_ERPS:
-        {
-            if(!CHECK_STATUS(g_byStatus, ERPS)){
-                byteWrite(SEND_ERPS);
-
-            } else{
-                uint16_t currentMillis = millis();
-                if(currentMillis - g_wIdleMillis > TEN_SECONDS) {
-                    g_wIdleMillis = currentMillis;
-                    byteWrite(SEND_IDLE);
-
-                }
-            }
-        }
-            
-            
-            break;
-            
-            //RTD Modes
-        case MODE_SOLO:
-        case MODE_TRAINEE:
-        case MODE_TRAINER:
-        {
+        } else{
             uint16_t currentMillis = millis();
-            if(currentMillis - g_wDataMillis > 100) {
-                g_wDataMillis = currentMillis;
-                if (CHECK_STATUS(g_byStatus, RTS)) {
-                    
-                    if (CHECK_STATUS(g_byStatus, NEW_SESSION)) {
-                        g_wOffsetTime = millis();
-                        byteWrite(SEND_HEADER);
-                        CLEAR_STATUS(g_byStatus, NEW_SESSION);
+            if(currentMillis - g_wIdleMillis > TEN_SECONDS) {
+                g_wIdleMillis = currentMillis;
+                byteWrite(SEND_IDLE);
+                
+            }
+        }
+    } else {
+        //Else operate normally
+        switch (g_byMode) {
+                
+                //This is a standby mode
+            case MODE_IDLE:
+            {
+                if(CHECK_STATUS(g_byStatus, BTCON)){
+                    uint16_t currentMillis = millis();
+                    if(currentMillis - g_wIdleMillis > THREE_SECONDS) {
+                        g_wIdleMillis = currentMillis;
+                        byteWrite(SEND_IDLE);
+                    }
+                }
+            }
+                
+                
+                //__asm__("nop\n\t");
+                break;
+                
+                //RTD Modes
+            case MODE_SOLO:
+            case MODE_ATHLETE:
+            case MODE_COACH:
+            {
+                uint16_t currentMillis = millis();
+                if(currentMillis - g_wDataMillis > 100) {
+                    g_wDataMillis = currentMillis;
+                    if (CHECK_STATUS(g_byStatus, RTS)) {
+                        
+                        if (CHECK_STATUS(g_byStatus, NEW_SESSION)) {
+                            g_wOffsetTime = millis();
+                            byteWrite(SEND_HEADER);
+                            CLEAR_STATUS(g_byStatus, NEW_SESSION);
+                        } else {
+                            byteWrite(SEND_DATA);
+                        }
+                        g_byMisses = 0;
+                        CLEAR_STATUS(g_byStatus, RTS);
                     } else {
-                        byteWrite(SEND_DATA);
+                        g_byMisses++;
+                        if(g_byMisses > MISSES_ALLOWED){
+                            SET_STATUS(g_byStatus, RTS);
+                        }
                     }
-                    g_byMisses = 0;
-                    CLEAR_STATUS(g_byStatus, RTS);
-                } else {
-                    g_byMisses++;
-                    if(g_byMisses > MISSES_ALLOWED){
-                        SET_STATUS(g_byStatus, RTS);
-                    }
+                    
                 }
                 
             }
-            
-        }
-            break;
-        case MODE_RACE:
-        {
-            uint16_t currentMillis = millis();
-            if(currentMillis - g_wDataMillis > 100) {
-                g_wDataMillis = currentMillis;
-                if (CHECK_STATUS(g_byStatus, RTS)) {
-                    
-                    if (CHECK_STATUS(g_byStatus, NEW_SESSION)) {
-                        g_wOffsetTime = millis();
-                        byteWrite(SEND_HEADER);
-                        CLEAR_STATUS(g_byStatus, NEW_SESSION);
+                break;
+            case MODE_RACE:
+            {
+                uint16_t currentMillis = millis();
+                if(currentMillis - g_wDataMillis > 100) {
+                    g_wDataMillis = currentMillis;
+                    if (CHECK_STATUS(g_byStatus, RTS)) {
+                        
+                        if (CHECK_STATUS(g_byStatus, NEW_SESSION)) {
+                            g_wOffsetTime = millis();
+                            byteWrite(SEND_HEADER);
+                            CLEAR_STATUS(g_byStatus, NEW_SESSION);
+                        } else {
+                            byteWrite(SEND_RACE);
+                        }
+                        g_byMisses = 0;
+                        CLEAR_STATUS(g_byStatus, RTS);
                     } else {
-                        byteWrite(SEND_RACE);
+                        g_byMisses++;
+                        if(g_byMisses > MISSES_ALLOWED){
+                            SET_STATUS(g_byStatus, RTS);
+                        }
                     }
-                    g_byMisses = 0;
-                    CLEAR_STATUS(g_byStatus, RTS);
-                } else {
-                    g_byMisses++;
-                    if(g_byMisses > MISSES_ALLOWED){
-                        SET_STATUS(g_byStatus, RTS);
-                    }
+                    
                 }
                 
             }
-            
+                break;
+            default:
+                __asm__("nop\n\t");
+                break;
         }
-            break;
-        default:
-            __asm__("nop\n\t");
-            break;
     }
     
     /** BT Sending function **/
@@ -274,7 +286,7 @@ void btSend() {
 
 void XBeeReceive(){
     if(XBPRO.available() > 0){
-        XBPRO.readBytes(g_byXbeeRecvPacket, XBEE_BUFFER);
+        XBPRO.readBytes(g_byXbeeRecvPacket, XBEE_BUFFER_SIZE);
         g_byXbeeRecvFlag = 1;
     }
 }
@@ -292,9 +304,8 @@ void XbeeSendMessage(){
     
     /** XBEE Sending function **/
     if(g_byXbeeSendFlag){
-        XBPRO.write(g_byXbeeSendPacket, XBEE_BUFFER);
+        XBPRO.write(g_byXbeeSendPacket, XBEE_BUFFER_SIZE);
         g_byXbeeSendFlag = 0;
     }
 }
-
 

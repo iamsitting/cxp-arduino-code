@@ -1,5 +1,11 @@
 ## Log
 
+3.0.0
+- Integrated RTD & ADS (Untested)
+- Added TinyGPS++ and BMI160 libraries
+- Integrated TRIO (Untested)
+- Integrated ALS, Threat and Brake feature (Untested)
+
 2.2.1
 - Race Mode Tested
 - Count misses for reliability

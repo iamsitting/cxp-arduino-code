@@ -28,13 +28,13 @@ extern uint8_t ind;
 
 #define POT_PIN 7
 
-#define USOUND_IN   A0
-#define ALSPIN3     9
-#define ALSPIN2     10
-#define ALSPIN1     11
-#define BREAK_LT    12
-#define USOUND_LT   13
-#define ALS_BUTTON_PIN 47
+#define USOUND_IN   	A0
+#define ALSPIN3     	9
+#define ALSPIN2     	10
+#define ALSPIN1     	11
+#define BRAKE_LT    	12
+#define USOUND_LT   	13
+#define ALS_BUTTON_PIN 	47
 
 #define ADS_INT1    48
 #define ADS_INT2    50
@@ -71,13 +71,15 @@ extern uint8_t ind;
 #define NEW_SESSION     1
 #define ERPS            2
 #define BTCON           3
+#define ERPS_ACK        4
+#define POSS_ACC		5
 
 /** Modes **/
 #define MODE_IDLE       0
 #define MODE_SOLO       1
 #define MODE_RACE       2
-#define MODE_TRAINEE    3
-#define MODE_TRAINER    4
+#define MODE_ATHLETE    3
+#define MODE_COACH      4
 #define MODE_ERPS       5
 
 /** Protocols **/
@@ -88,27 +90,12 @@ extern uint8_t ind;
 #define SEND_RACE       4
 
 /** BT definitions **/
-#define BAUD_RATE   9600
-#define BUFFER_SIZE 32
-#define MISSES_ALLOWED 20
-
-
-
-/* Metric variables */
-extern union Floater32_t g_fSpeed;
-extern union Floater32_t g_fDistance;
-extern union Floater32_t g_fCalories;
-extern union Floater32_t g_fLatitude;
-extern union Floater32_t g_fLongitude;
-extern union Floater32_t g_fOppSpeed;
-extern union Floater32_t g_fOppDistance;
+#define BAUD_RATE   	9600
+#define BUFFER_SIZE 	32
+#define MISSES_ALLOWED 	15
 
 extern uint32_t g_wOffsetTime;
 extern struct timeStamp g_TimeStamp;
-
-
-extern uint8_t g_byBatteryLevel;
-extern uint8_t g_byThreat;
 
 /* Bluetooth variables */
 extern uint8_t g_bySendPacket[BUFFER_SIZE];
@@ -127,30 +114,16 @@ extern uint8_t g_byStatus;
  Bit 1: New Session - When high CSV header is sent instead of data.
  Bit 2: ERPS - This is high when ERPS mode is enabled.
  Bit 3: BTCON - This is high when BT connection is established
- Bit 4: Undefined
- Bit 5: Undefined
+ Bit 4: ERPS_ACK - This is high when ERPS mode is enabled on app.
+ Bit 5: POSS_ACC - This is high when ADS detects possible accident
  Bit 6: Undefined
  Bit 7: Undefined
- */
-
-//extern uint8_t g_byIOstatus; //bitfield
-/*
- Bit 0: ACC. - High when Accelerometer is connected (always)
- Bit 1: Bluetooth - High when bluetooth is connected
- Bit 2: GPS - Low when GPS signal is connected
- Bit 3: XBee - High when Xbee is connected
- Bit 4: Undefined
- Bit 5: Undefined
- Bit 6: Undefined
- Bit 7: Undefined
- 
  */
 
 
 /** main functions **/
 void btListen(void);
 void btSend(void);
-void setupALS(void);
 void XBeeReceive(void);
 
 

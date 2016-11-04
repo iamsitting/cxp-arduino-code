@@ -6,9 +6,16 @@ This project contains the embedded software for the Cycle X-Pro. This project is
 
 ### Version
 
-2.2.1
+3.0.0
 
 ### Most Recent Changes
+
+3.0.0
+- Integrated RTD & ADS (Untested)
+- Added TinyGPS++ and BMI160 libraries
+- Integrated TRIO (Untested)
+- Integrated ALS, Threat and Brake feature (Untested)
+- Switched from C to C++ files
 
 2.2.1
 - Race Mode Tested
@@ -24,10 +31,6 @@ This project contains the embedded software for the Cycle X-Pro. This project is
 - Threat flag added, not tested
 - New BT receiving routine
 
-2.0.10
-- Rewrote SEND_DATA
-- Battery Indicator tested
-
 ## Code Design
 
 The "main" code is located in the INO file. Features are to be added to the functions file.
@@ -40,14 +43,18 @@ This file defines types, structures, and unions that are to be used in the progr
 
 This file defines global variables that are used across the INO and C files. Descriptions for bitfield variables are located here.
 
-### functions.c
+### functions.cpp
 
 This is where data processing functions and futrue functions are to be written. Function declarations are located in the H file.
 
-### testing.c
-
-This is where untested or feedback functions are written. Function declarations are located in the H file. Macros are in the globals file.
-
-### als.c
+### als.cpp
 
 This is where ALS functions are written.
+
+### trio.cpp
+
+This is where TRIO adn XBee functions are written.
+
+### rtd.cpp
+
+This is where RTD and ADS functions are written.

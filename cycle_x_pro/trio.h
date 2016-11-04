@@ -12,7 +12,8 @@
 #include "globals.h"
 #include "types.h"
 
-#define XBEE_BUFFER 32
+#define XBEE_BUFFER_SIZE 32
+#define XBEE_BAUD 9600
 #define START_BYTE 0x7E
 
 #define TRIO_INIT 3
@@ -25,8 +26,8 @@
 #define TRIO_ATHLETE 0
 #define TRIO_COACH 1
 
-extern uint8_t g_byXbeeRecvPacket[XBEE_BUFFER];
-extern uint8_t g_byXbeeSendPacket[XBEE_BUFFER];
+extern uint8_t g_byXbeeRecvPacket[XBEE_BUFFER_SIZE];
+extern uint8_t g_byXbeeSendPacket[XBEE_BUFFER_SIZE];
 extern uint8_t g_byXbeeSendFlag;
 extern uint8_t g_byXbeeRecvFlag;
 
@@ -43,8 +44,9 @@ extern "C" {
     
     /** TRIO Functions **/
     void XBeeDeconstructMessage(void);
-    void XBeeBuildMessage(void);
+    void XBeeBuildMessage(uint8_t protocol);
     void XBeeSendMessage(void);
+    void setupTrio(void);
     
     
 #ifdef __cplusplus
