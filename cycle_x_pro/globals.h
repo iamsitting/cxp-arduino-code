@@ -109,6 +109,7 @@ extern uint8_t g_byMode;
 extern uint32_t g_wIdleMillis;
 extern uint32_t g_wDataMillis;
 extern uint8_t g_byStatus;
+extern uint8_t g_byMisses;
 /* Bitfield variable
  Bit 0: Ready To Send - Only sends data when RTS is high. RTS goes low after sending data.
  Bit 1: New Session - When high CSV header is sent instead of data.
@@ -119,12 +120,6 @@ extern uint8_t g_byStatus;
  Bit 6: Undefined
  Bit 7: Undefined
  */
-
-
-/** main functions **/
-void btListen(void);
-void btSend(void);
-void XBeeReceive(void);
 
 
 #endif /* globals_h */

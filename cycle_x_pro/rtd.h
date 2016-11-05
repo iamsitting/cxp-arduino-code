@@ -33,7 +33,7 @@ extern unsigned long previousMillis_distance;
 extern unsigned long previousMillis_cal;
 extern unsigned long previousMillis_dre;
 extern unsigned long previousMillis_fad;
-extern uint16_t g_woWeight;
+extern uint16_t g_halfWeight;
 
 extern TinyGPSPlus gps;
 extern BMI160GenClass Bmi;

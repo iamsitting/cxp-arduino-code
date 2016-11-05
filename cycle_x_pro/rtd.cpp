@@ -53,22 +53,22 @@ void getCalories() {
         cal_sec = 0;
     }
     else if(g_fSpeed.bits32 < 10){
-        cal_sec = (((0.0301) * (g_woWeight)) + 0.037) / 60 * dt;
+        cal_sec = (((0.0301) * (g_halfWeight)) + 0.037) / 60 * dt;
     }
     else if(g_fSpeed.bits32 < 12){
-        cal_sec = (((0.0455) * (g_woWeight)) - 0.0331) / 60 * dt;
+        cal_sec = (((0.0455) * (g_halfWeight)) - 0.0331) / 60 * dt;
     }
     else if(g_fSpeed.bits32 < 14){
-        cal_sec = (((0.0605) * (g_woWeight)) - 0.0085) / 60 * dt;
+        cal_sec = (((0.0605) * (g_halfWeight)) - 0.0085) / 60 * dt;
     }
     else if(g_fSpeed.bits32 < 16){
-        cal_sec = (((0.0756) * (g_woWeight)) + 0.009) / 60 * dt;
+        cal_sec = (((0.0756) * (g_halfWeight)) + 0.009) / 60 * dt;
     }
     else if(g_fSpeed.bits32 < 20){
-        cal_sec = (((0.0908) * (g_woWeight)) + 0.0275) / 60 * dt;
+        cal_sec = (((0.0908) * (g_halfWeight)) + 0.0275) / 60 * dt;
     }
     else if(g_fSpeed.bits32 >= 20){
-        cal_sec = (((0.121) * (g_woWeight)) - 0.0106) / 60 * dt;
+        cal_sec = (((0.121) * (g_halfWeight)) - 0.0106) / 60 * dt;
     }
     
     g_fCalories.bits32 = g_fCalories.bits32 + cal_sec;

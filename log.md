@@ -1,5 +1,8 @@
 ## Log
 
+3.0.1
+- Added Name/Weight Parameters (Untested)
+
 3.0.0
 - Integrated RTD & ADS (Untested)
 - Added TinyGPS++ and BMI160 libraries

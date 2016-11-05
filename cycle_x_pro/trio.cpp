@@ -171,6 +171,31 @@ void XBeeDeconstructMessage(){
     }
 }
 
+void XBeeReceive(){
+    if(XBPRO.available() > 0){
+        XBPRO.readBytes(g_byXbeeRecvPacket, XBEE_BUFFER_SIZE);
+        g_byXbeeRecvFlag = 1;
+    }
+}
+
+void XbeeSendMessage(){
+    //TODO: add cases
+    switch(g_byMode) {
+        case MODE_IDLE:
+            __asm__("nop\n\t");
+            break;
+        default:
+            __asm__("nop\n\t");
+            break;
+    }
+    
+    /** XBEE Sending function **/
+    if(g_byXbeeSendFlag){
+        XBPRO.write(g_byXbeeSendPacket, XBEE_BUFFER_SIZE);
+        g_byXbeeSendFlag = 0;
+    }
+}
+
 void setupTrio(){
     XBPRO.begin(XBEE_BAUD);
 }

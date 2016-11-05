@@ -17,7 +17,10 @@ extern "C" {
 #endif //__cplusplus
     
     
-    
+    /** main functions **/
+    void BluetoothReceive(void);
+    void BluetoothSend(void);
+    void BluetoothBuildMessage(uint8_t protocol);
     
     /** Metric Functions **/
     
@@ -26,11 +29,11 @@ extern "C" {
     void udpateBatteryLevel(void);
     void getRaceData(void);
     void updateData(void);
+    void getNameWeight(void);
 
     
     /** Packet Functions **/
-    void byteWrite(uint8_t protocol);
-    void btParse();
+    void BluetoothDeconstructMessage(void);
     
 #ifdef __cplusplus
 }

@@ -7,7 +7,7 @@
 //              team14
 //
 // Date         9/22/16 9:40 AM
-// Version      3.0.0
+// Version      3.0.1
 //
 // Copyright    © Carlos Salamanca, 2016
 // Licence      MIT
@@ -70,6 +70,8 @@ Floater32_t g_fOppSpeed;
 Floater32_t g_fOppDistance;
 Floater32_t g_fOppLongitude;
 Floater32_t g_fOppLatitude;
+uint8_t g_byUserName[NAME_SIZE];
+uint8_t g_byOppUserName[NAME_SIZE];
 
 //ADS & RTD
 Floater32_t g_fSpeed;
@@ -83,7 +85,7 @@ unsigned long previousMillis_distance = 0;
 unsigned long previousMillis_cal = 0;
 unsigned long previousMillis_dre = 0;
 unsigned long previousMillis_fad = 0;
-uint16_t g_woWeight = 0;
+uint16_t g_halfWeight = 0;
 
 
 /** Setup Arduino objects **/
@@ -117,7 +119,7 @@ void loop() {
     changeBrakeLight();
 
     //2. listen for commands from App
-    btListen();
+    BluetoothReceive();
     
     //3. Parse command/change mode
     if (g_byBTRecvFlag) {
@@ -127,7 +129,7 @@ void loop() {
         DEBUG.write(g_byRecvPacket[1]);
         DEBUG.write('\n');
 #endif
-        btParse();
+        BluetoothDeconstructMessage();
     }
     
 //#ifdef TEST_CODE
@@ -155,7 +157,7 @@ void loop() {
     //XbeeSendMessage();
     
     //7. Send message to App
-    btSend();
+    BluetoothSend();
 
     //8. Check ADS
     if(CHECK_STATUS(g_byStatus, POSS_ACC)){
@@ -164,148 +166,4 @@ void loop() {
     
 }
 
-/** Input and output functions **/
-void btListen() {
-    uint8_t i = 0;
-    uint8_t inChar = 0;
-    while (HC06.available()){
-        inChar = HC06.read();
-        g_byRecvPacket[i++] = inChar;
-        if(inChar == '\n'){
-            g_byBTRecvFlag = 1;
-        }
-    }
-}
-
-void btSend() {
-    //if ERPS
-    if(CHECK_STATUS(g_byStatus, ERPS)){
-        if(!CHECK_STATUS(g_byStatus, ERPS_ACK)){
-            byteWrite(SEND_ERPS);
-            
-        } else{
-            uint16_t currentMillis = millis();
-            if(currentMillis - g_wIdleMillis > TEN_SECONDS) {
-                g_wIdleMillis = currentMillis;
-                byteWrite(SEND_IDLE);
-                
-            }
-        }
-    } else {
-        //Else operate normally
-        switch (g_byMode) {
-                
-                //This is a standby mode
-            case MODE_IDLE:
-            {
-                if(CHECK_STATUS(g_byStatus, BTCON)){
-                    uint16_t currentMillis = millis();
-                    if(currentMillis - g_wIdleMillis > THREE_SECONDS) {
-                        g_wIdleMillis = currentMillis;
-                        byteWrite(SEND_IDLE);
-                    }
-                }
-            }
-                
-                
-                //__asm__("nop\n\t");
-                break;
-                
-                //RTD Modes
-            case MODE_SOLO:
-            case MODE_ATHLETE:
-            case MODE_COACH:
-            {
-                uint16_t currentMillis = millis();
-                if(currentMillis - g_wDataMillis > 100) {
-                    g_wDataMillis = currentMillis;
-                    if (CHECK_STATUS(g_byStatus, RTS)) {
-                        
-                        if (CHECK_STATUS(g_byStatus, NEW_SESSION)) {
-                            g_wOffsetTime = millis();
-                            byteWrite(SEND_HEADER);
-                            CLEAR_STATUS(g_byStatus, NEW_SESSION);
-                        } else {
-                            byteWrite(SEND_DATA);
-                        }
-                        g_byMisses = 0;
-                        CLEAR_STATUS(g_byStatus, RTS);
-                    } else {
-                        g_byMisses++;
-                        if(g_byMisses > MISSES_ALLOWED){
-                            SET_STATUS(g_byStatus, RTS);
-                        }
-                    }
-                    
-                }
-                
-            }
-                break;
-            case MODE_RACE:
-            {
-                uint16_t currentMillis = millis();
-                if(currentMillis - g_wDataMillis > 100) {
-                    g_wDataMillis = currentMillis;
-                    if (CHECK_STATUS(g_byStatus, RTS)) {
-                        
-                        if (CHECK_STATUS(g_byStatus, NEW_SESSION)) {
-                            g_wOffsetTime = millis();
-                            byteWrite(SEND_HEADER);
-                            CLEAR_STATUS(g_byStatus, NEW_SESSION);
-                        } else {
-                            byteWrite(SEND_RACE);
-                        }
-                        g_byMisses = 0;
-                        CLEAR_STATUS(g_byStatus, RTS);
-                    } else {
-                        g_byMisses++;
-                        if(g_byMisses > MISSES_ALLOWED){
-                            SET_STATUS(g_byStatus, RTS);
-                        }
-                    }
-                    
-                }
-                
-            }
-                break;
-            default:
-                __asm__("nop\n\t");
-                break;
-        }
-    }
-    
-    /** BT Sending function **/
-    if(g_byBTSendFlag){
-        HC06.write(g_bySendPacket, BUFFER_SIZE);
-        g_byBTSendFlag = 0;
-    }
-    
-    
-    
-}
-
-void XBeeReceive(){
-    if(XBPRO.available() > 0){
-        XBPRO.readBytes(g_byXbeeRecvPacket, XBEE_BUFFER_SIZE);
-        g_byXbeeRecvFlag = 1;
-    }
-}
-
-void XbeeSendMessage(){
-    //TODO: add cases
-    switch(g_byMode) {
-        case MODE_IDLE:
-            __asm__("nop\n\t");
-            break;
-        default:
-            __asm__("nop\n\t");
-            break;
-    }
-    
-    /** XBEE Sending function **/
-    if(g_byXbeeSendFlag){
-        XBPRO.write(g_byXbeeSendPacket, XBEE_BUFFER_SIZE);
-        g_byXbeeSendFlag = 0;
-    }
-}
 

@@ -15,6 +15,7 @@
 #define XBEE_BUFFER_SIZE 32
 #define XBEE_BAUD 9600
 #define START_BYTE 0x7E
+#define NAME_SIZE 8
 
 #define TRIO_INIT 3
 #define TRIO_TRAIN 1
@@ -35,6 +36,8 @@ extern union Floater32_t g_fOppSpeed;
 extern union Floater32_t g_fOppDistance;
 extern union Floater32_t g_fOppLongitude;
 extern union Floater32_t g_fOppLatitude;
+extern uint8_t g_byUserName[NAME_SIZE];
+extern uint8_t g_byOppUserName[NAME_SIZE];
 
 #ifdef __cplusplus
 extern "C" {
@@ -46,6 +49,7 @@ extern "C" {
     void XBeeDeconstructMessage(void);
     void XBeeBuildMessage(uint8_t protocol);
     void XBeeSendMessage(void);
+    void XBeeReceive(void);
     void setupTrio(void);
     
     

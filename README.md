@@ -1,14 +1,18 @@
 ## Synopsis
 
-This project contains the embedded software for the Cycle X-Pro. This project is designed for an Aduino DUE, although the majority of the code is written in C rather than a single INO file.
+This project contains the embedded software for the Cycle X-Pro. This project is designed for an Aduino DUE, although, the majority of the code is written in C++ rather than a single INO file.
 
 ## Log
 
 ### Version
 
-3.0.0
+3.0.1
 
 ### Most Recent Changes
+
+3.0.1
+- Added Name/Weight Parameters (Untested)
+- Reorganized functions
 
 3.0.0
 - Integrated RTD & ADS (Untested)

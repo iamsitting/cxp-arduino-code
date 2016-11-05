@@ -74,7 +74,7 @@ void updateData(){
     }
 }
 
-void byteWrite(uint8_t protocol){
+void BluetoothBuildMessage(uint8_t protocol){
     uint8_t packet[BUFFER_SIZE];
     uint8_t i = 0;
     uint8_t c = 0;
@@ -276,12 +276,30 @@ void byteWrite(uint8_t protocol){
     g_byBTSendFlag = 1;
 }
 
-void btParse(){
+void getNameWeight(){
+    uint8_t i = 0;
+    
+    g_halfWeight = (g_byRecvPacket[1]-30)*100 +
+        (g_byRecvPacket[2]-30)*10 +
+        g_byRecvPacket[3]-30;
+            
+    for(i=0; i<NAME_SIZE; i++){
+        if(g_byRecvPacket[i+4] != '\n'){
+            g_byUserName[i] = g_byRecvPacket[i+4];
+        } else{
+            g_byUserName[i] = g_byRecvPacket[i+4];
+            break;
+        } 
+    }            
+}
+
+void BluetoothDeconstructMessage(){
 
     switch (g_byRecvPacket[0]) {
             //Apply correct Mode of operation and System status
         case 0x43: //C - BT Connected
         case 0x63:
+            getNameWeight();
             SET_STATUS(g_byStatus, RTS);
             SET_STATUS(g_byStatus, BTCON); //clear on app/BT destroy
             break;
@@ -341,3 +359,126 @@ void btParse(){
             __asm__("nop\n\t");
     }
 }
+
+
+/** Input and output functions **/
+void BluetoothReceive() {
+    uint8_t i = 0;
+    uint8_t inChar = 0;
+    while (HC06.available()){
+        inChar = HC06.read();
+        g_byRecvPacket[i++] = inChar;
+        if(inChar == '\n'){
+            g_byBTRecvFlag = 1;
+        }
+    }
+}
+
+void BluetoothSend() {
+    //if ERPS
+    if(CHECK_STATUS(g_byStatus, ERPS)){
+        if(!CHECK_STATUS(g_byStatus, ERPS_ACK)){
+          BluetoothBuildMessage(SEND_ERPS);
+            
+        } else{
+            uint16_t currentMillis = millis();
+            if(currentMillis - g_wIdleMillis > TEN_SECONDS) {
+                g_wIdleMillis = currentMillis;
+                BluetoothBuildMessage(SEND_IDLE);
+                
+            }
+        }
+    } else {
+        //Else operate normally
+        switch (g_byMode) {
+                
+                //This is a standby mode
+            case MODE_IDLE:
+            {
+                if(CHECK_STATUS(g_byStatus, BTCON)){
+                    uint16_t currentMillis = millis();
+                    if(currentMillis - g_wIdleMillis > THREE_SECONDS) {
+                        g_wIdleMillis = currentMillis;
+                        BluetoothBuildMessage(SEND_IDLE);
+                    }
+                }
+            }
+                
+                
+                //__asm__("nop\n\t");
+                break;
+                
+                //RTD Modes
+            case MODE_SOLO:
+            case MODE_ATHLETE:
+            case MODE_COACH:
+            {
+                uint16_t currentMillis = millis();
+                if(currentMillis - g_wDataMillis > 100) {
+                    g_wDataMillis = currentMillis;
+                    if (CHECK_STATUS(g_byStatus, RTS)) {
+                        
+                        if (CHECK_STATUS(g_byStatus, NEW_SESSION)) {
+                            g_wOffsetTime = millis();
+                            BluetoothBuildMessage(SEND_HEADER);
+                            CLEAR_STATUS(g_byStatus, NEW_SESSION);
+                        } else {
+                          BluetoothBuildMessage(SEND_DATA);
+                        }
+                        g_byMisses = 0;
+                        CLEAR_STATUS(g_byStatus, RTS);
+                    } else {
+                        g_byMisses++;
+                        if(g_byMisses > MISSES_ALLOWED){
+                            SET_STATUS(g_byStatus, RTS);
+                        }
+                    }
+                    
+                }
+                
+            }
+                break;
+            case MODE_RACE:
+            {
+                uint16_t currentMillis = millis();
+                if(currentMillis - g_wDataMillis > 100) {
+                    g_wDataMillis = currentMillis;
+                    if (CHECK_STATUS(g_byStatus, RTS)) {
+                        
+                        if (CHECK_STATUS(g_byStatus, NEW_SESSION)) {
+                            g_wOffsetTime = millis();
+                            BluetoothBuildMessage(SEND_HEADER);
+                            CLEAR_STATUS(g_byStatus, NEW_SESSION);
+                        } else {
+                            BluetoothBuildMessage(SEND_RACE);
+                        }
+                        g_byMisses = 0;
+                        CLEAR_STATUS(g_byStatus, RTS);
+                    } else {
+                        g_byMisses++;
+                        if(g_byMisses > MISSES_ALLOWED){
+                            SET_STATUS(g_byStatus, RTS);
+                        }
+                    }
+                    
+                }
+                
+            }
+                break;
+            default:
+                __asm__("nop\n\t");
+                break;
+        }
+    }
+    
+    /** BT Sending function **/
+    if(g_byBTSendFlag){
+        HC06.write(g_bySendPacket, BUFFER_SIZE);
+        g_byBTSendFlag = 0;
+    }
+    
+    
+    
+}
+
+
