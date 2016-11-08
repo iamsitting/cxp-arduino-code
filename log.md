@@ -1,5 +1,8 @@
 ## Log
 
+3.0.2
+- Edited for consistent data types
+
 3.0.1
 - Added Name/Weight Parameters (Untested)
 

@@ -6,9 +6,12 @@ This project contains the embedded software for the Cycle X-Pro. This project is
 
 ### Version
 
-3.0.1
+3.0.2
 
 ### Most Recent Changes
+
+3.0.2
+- Edited for consisten data types
 
 3.0.1
 - Added Name/Weight Parameters (Untested)

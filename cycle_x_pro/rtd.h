@@ -29,10 +29,10 @@ extern union Floater32_t g_fDistance;
 extern union Floater32_t g_fCalories;
 extern union Floater32_t g_fLatitude;
 extern union Floater32_t g_fLongitude;
-extern unsigned long previousMillis_distance;
-extern unsigned long previousMillis_cal;
-extern unsigned long previousMillis_dre;
-extern unsigned long previousMillis_fad;
+extern uint32_t previousMillis_distance;
+extern uint32_t previousMillis_cal;
+extern uint32_t previousMillis_dre;
+extern uint32_t previousMillis_fad;
 extern uint16_t g_halfWeight;
 
 extern TinyGPSPlus gps;

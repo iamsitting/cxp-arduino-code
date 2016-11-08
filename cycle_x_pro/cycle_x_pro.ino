@@ -46,9 +46,9 @@ uint32_t g_wDataMillis = 0;
 uint8_t g_byMisses = 0;
 
 //ALS
-uint8_t g_byChangedToSimple = 0;
-uint32_t g_wLastDebounceTime = 0;
-uint8_t g_byFlashingPattern = 0;
+volatile uint8_t g_byChangedToSimple = 0;
+volatile uint32_t g_wLastDebounceTime = 0;
+volatile uint8_t g_byFlashingPattern = 0;
 uint32_t g_wPreviousMillis = 0;
 uint32_t g_wPreviousMillis2 = 0;
 uint8_t g_byALSPin1State = LOW;
@@ -81,10 +81,10 @@ Floater32_t g_fLatitude;
 Floater32_t g_fLongitude;
 TinyGPSPlus gps;
 BMI160GenClass Bmi;
-unsigned long previousMillis_distance = 0;
-unsigned long previousMillis_cal = 0;
-unsigned long previousMillis_dre = 0;
-unsigned long previousMillis_fad = 0;
+uint32_t previousMillis_distance = 0;
+uint32_t previousMillis_cal = 0;
+uint32_t previousMillis_dre = 0;
+uint32_t previousMillis_fad = 0;
 uint16_t g_halfWeight = 0;
 
 

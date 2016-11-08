@@ -18,9 +18,9 @@
 
 #define US_MIN_DISTANCE 30
 
-extern uint8_t g_byChangedToSimple;
-extern uint32_t g_wLastDebounceTime;
-extern uint8_t g_byFlashingPattern;
+extern volatile uint8_t g_byChangedToSimple;
+extern volatile uint32_t g_wLastDebounceTime;
+extern volatile uint8_t g_byFlashingPattern;
 extern uint32_t g_wPreviousMillis;
 extern uint32_t g_wPreviousMillis2;
 extern uint8_t g_byALSPin1State;

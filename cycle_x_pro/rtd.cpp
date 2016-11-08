@@ -29,9 +29,9 @@ void getSpeed(){
 
 void getDistance(){
     
-    float dt;
-    unsigned long currentMillis = millis(); //Internal counter
-    dt = (currentMillis - previousMillis_distance) / ((float)1000);
+    float32_t dt;
+    uint32_t currentMillis = millis(); //Internal counter
+    dt = (currentMillis - previousMillis_distance) / ((float32_t)1000);
     previousMillis_distance = currentMillis;
     
     if(g_fSpeed.bits32 > MIN_SPEED){
@@ -44,8 +44,8 @@ void getCalories() {
     
     float32_t cal_sec = 0;
     float32_t dt;
-    unsigned long currentMillis = millis(); //Internal counter
-    dt = (currentMillis - previousMillis_cal) / ((double)1000);
+    uint32_t currentMillis = millis(); //Internal counter
+    dt = (currentMillis - previousMillis_cal) / ((float32_t)1000);
     previousMillis_cal = currentMillis; // Current Millis from above may be different than this current millis.
     
     
@@ -95,7 +95,7 @@ void getADS(){
 
 void checkFalseAlarm (){
   
-  unsigned long currentMillis = millis(); //Internal counter
+  uint32_t currentMillis = millis(); //Internal counter
 
   if (currentMillis - previousMillis_fad >= FALSE_ALARM_WINDOW){
 
@@ -114,10 +114,10 @@ void checkFalseAlarm (){
 float32_t calculateSpeed(float32_t initSpeed){
     
     float32_t dt, Ay, finalSpeed;
-    unsigned long currentMillis = millis(); //Internal counter  
+    uint32_t currentMillis = millis(); //Internal counter  
 
     Ay = getAcceleration(Y_DIRECTION);
-    dt = (currentMillis - previousMillis_dre) / ((double) 1000);
+    dt = (currentMillis - previousMillis_dre) / ((float32_t) 1000);
     previousMillis_dre = currentMillis; // Current Millis from above may be different than this current millis.
     finalSpeed = abs ((initSpeed) + (((Ay) * (9.8*1609.344)/3600) * dt));
 
