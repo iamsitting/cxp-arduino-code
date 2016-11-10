@@ -6,9 +6,14 @@ This project contains the embedded software for the Cycle X-Pro. This project is
 
 ### Version
 
-3.0.2
+3.0.3
 
 ### Most Recent Changes
+
+3.0.3
+- ALS Integration tested
+- ADS/ERPS Integration tested
+- Lat & Long come out to 0
 
 3.0.2
 - Edited for consisten data types

@@ -55,7 +55,36 @@ void updateData(){
             g_byNextUpdate++;
             break;
         case 3:
-            //TODO: getUSThread
+            getLocation();
+            g_byNextUpdate++;
+            break;
+        case 4:
+            getADS();
+        default:
+            g_byNextUpdate = 0;
+            
+    }
+}
+
+void updateData2(){
+    
+    switch(g_byNextUpdate){
+        case 0:
+            g_fSpeed.bits32 = generateData(ind++);
+            g_fDistance.bits32 = g_fSpeed.bits32 + 5;
+            g_byNextUpdate++;
+            break;
+        case 1:
+            //TODO: add to als
+            g_byBatteryLevel = 90;
+            g_byNextUpdate++;
+            break;
+        case 2:
+            g_fCalories.bits32 = g_fSpeed.bits32 + 5;
+            g_byNextUpdate++;
+            break;
+        case 3:
+            g_byThreat = 0;
             g_byNextUpdate++;
             break;
         case 4:
@@ -63,7 +92,7 @@ void updateData(){
             g_byNextUpdate++;
             break;
         case 5:
-            getUSThreat();
+            //getUSThreat();
             g_byNextUpdate++;
             break;
         case 6:
@@ -397,7 +426,7 @@ void BluetoothSend() {
             {
                 if(CHECK_STATUS(g_byStatus, BTCON)){
                     uint16_t currentMillis = millis();
-                    if(currentMillis - g_wIdleMillis > THREE_SECONDS) {
+                    if(currentMillis - g_wIdleMillis > 500) {
                         g_wIdleMillis = currentMillis;
                         BluetoothBuildMessage(SEND_IDLE);
                     }

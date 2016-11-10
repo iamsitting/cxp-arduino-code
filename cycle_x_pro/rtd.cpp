@@ -15,16 +15,18 @@
 void getLocation(){
     g_fLongitude.bits32 = gps.location.lng();
     g_fLatitude.bits32 = gps.location.lat();
+    g_fLongitude.bits32 = -96.328360;
+    g_fLatitude.bits32 = 30.633797;
     
 }
 
 void getSpeed(){
-
     if (gps.speed.isUpdated()){
         g_fSpeed.bits32 = gps.speed.mph();
-    } else {
+        g_byGPSMisses = 0;
+      } else {
         g_fSpeed.bits32 = calculateSpeed(g_fSpeed.bits32);
-    }
+        } 
 }
 
 void getDistance(){
@@ -94,16 +96,20 @@ void getADS(){
 }
 
 void checkFalseAlarm (){
-  
+
   uint32_t currentMillis = millis(); //Internal counter
 
   if (currentMillis - previousMillis_fad >= FALSE_ALARM_WINDOW){
+
+    //TODO: Remove this line
+    g_fSpeed.bits32 = 0;
 
     if(g_fSpeed.bits32 < MIN_SPEED){
 
         SET_STATUS(g_byStatus, ERPS);
         CLEAR_STATUS(g_byStatus, POSS_ACC);
     } else {
+      
         CLEAR_STATUS(g_byStatus, POSS_ACC);
     }
     
@@ -115,11 +121,24 @@ float32_t calculateSpeed(float32_t initSpeed){
     
     float32_t dt, Ay, finalSpeed;
     uint32_t currentMillis = millis(); //Internal counter  
-
+    uint8_t satellites = 0;
+    
     Ay = getAcceleration(Y_DIRECTION);
     dt = (currentMillis - previousMillis_dre) / ((float32_t) 1000);
     previousMillis_dre = currentMillis; // Current Millis from above may be different than this current millis.
-    finalSpeed = abs ((initSpeed) + (((Ay) * (9.8*1609.344)/3600) * dt));
+    
+    satellites = gps.satellites.value();
+    
+    if(satellites > 0){
+      finalSpeed = abs ((initSpeed) + (((Ay) * (9.8*1609.344)/3600) * dt));
+    } else {
+      finalSpeed = abs ((gps.speed.mph()) + (((Ay) * (9.8*1609.344)/3600) * dt));
+      g_byGPSMisses++;
+    }
+
+    if(g_byGPSMisses > 50){
+      finalSpeed = 0;
+    }
 
     return finalSpeed;
 

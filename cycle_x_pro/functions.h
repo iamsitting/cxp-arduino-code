@@ -30,6 +30,7 @@ extern "C" {
     void getRaceData(void);
     void updateData(void);
     void getNameWeight(void);
+    void updateData2(void);
 
     
     /** Packet Functions **/

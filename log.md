@@ -1,5 +1,10 @@
 ## Log
 
+3.0.3
+- ALS Integration tested
+- ADS/ERPS Integration tested
+- Lat & Long come out to 0
+
 3.0.2
 - Edited for consistent data types
 

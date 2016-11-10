@@ -18,7 +18,7 @@
 #define BMI_PIN 52
 
 #define MIN_SPEED 0.5
-#define FALSE_ALARM_WINDOW 10000
+#define FALSE_ALARM_WINDOW 500
 #define X_DIRECTION 1
 #define Y_DIRECTION 2
 #define Z_DIRECTION 3
@@ -34,6 +34,7 @@ extern uint32_t previousMillis_cal;
 extern uint32_t previousMillis_dre;
 extern uint32_t previousMillis_fad;
 extern uint16_t g_halfWeight;
+extern uint8_t g_byGPSMisses;
 
 extern TinyGPSPlus gps;
 extern BMI160GenClass Bmi;

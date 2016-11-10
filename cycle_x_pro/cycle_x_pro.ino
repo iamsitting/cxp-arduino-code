@@ -7,7 +7,7 @@
 //              team14
 //
 // Date         9/22/16 9:40 AM
-// Version      3.0.1
+// Version      3.0.3
 //
 // Copyright    © Carlos Salamanca, 2016
 // Licence      MIT
@@ -86,6 +86,7 @@ uint32_t previousMillis_cal = 0;
 uint32_t previousMillis_dre = 0;
 uint32_t previousMillis_fad = 0;
 uint16_t g_halfWeight = 0;
+uint8_t g_byGPSMisses = 0;
 
 
 /** Setup Arduino objects **/
@@ -97,9 +98,8 @@ float32_t sine_test[32] = {512,611,707,796,873,937,984,1013,1023,1013,984,937,87
 void setup() {
     HC06.begin(BAUD_RATE);
     
-#ifdef ALS_TEST
     setupALS();
-#endif
+    setupRTD();
     
 #ifdef TEST_CODE
     DEBUG.begin(9600);
@@ -114,14 +114,18 @@ void setup() {
 void loop() {
 
     //1. switch flashing pattern
-    switchFlashingPattern();
-    flashRearLEDS();
-    changeBrakeLight();
-
+    DEBUG.println("ALS Stuff");
+    //switchFlashingPattern();
+    //flashRearLEDS();
+    //To be tested
+    //changeBrakeLight();
+    
+    DEBUG.println("BT Receive");
     //2. listen for commands from App
     BluetoothReceive();
-    
-    //3. Parse command/change mode
+
+    DEBUG.println("BT Parse");
+    //3. Parse command/change mode M 
     if (g_byBTRecvFlag) {
         g_byBTRecvFlag = 0;
 #ifdef TEST_CODE
@@ -135,18 +139,26 @@ void loop() {
 //#ifdef TEST_CODE
     DEBUG.print("    MODE   ");
     DEBUG.println(g_byMode);
-    DEBUG.print("    STATUS   ");
-    DEBUG.print(g_byStatus, BIN);
-    //DEBUG.print("     pattern   ");
-    //DEBUG.println(g_byFlashingPattern);
+    DEBUG.print("    Speed   ");
+    DEBUG.println(g_fSpeed.bits32, DEC);
+    DEBUG.print("    Poss. Accident   ");
+    DEBUG.println(CHECK_STATUS(g_byStatus, POSS_ACC));
+    DEBUG.print("    ERPS!!   ");
+    DEBUG.println(CHECK_STATUS(g_byStatus, ERPS));
+    DEBUG.print("    Latitude!!   ");
+    DEBUG.println(g_fLatitude.bits32);
+    
+    //DEBUG.write('\n');
 //#endif
-    
+
     //4. update data
-    updateData();
-    
+    //updateData();
+    getUSThreat();
+    updateData2();
+
     //5. receive trio
     //XBeeReceive();
-    
+
     //5. Listen for TRIO
     if(g_byXbeeRecvFlag){
         g_byXbeeRecvFlag = 0;
@@ -155,12 +167,13 @@ void loop() {
     
     //6. Build & Send to Opponent
     //XbeeSendMessage();
-    
+
     //7. Send message to App
     BluetoothSend();
 
     //8. Check ADS
     if(CHECK_STATUS(g_byStatus, POSS_ACC)){
+      DEBUG.print("    CheckingFalseAlarm   ");
         checkFalseAlarm();
     }
     

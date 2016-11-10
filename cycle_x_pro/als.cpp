@@ -18,10 +18,6 @@ void ALSButton_isr(){
         g_byFlashingPattern = (g_byFlashingPattern + 1 >= 5 ? 0 : g_byFlashingPattern + 1);
         if(g_byFlashingPattern < 2) g_byChangedToSimple = 0;
         
-#ifdef TEST_ERPS
-        SET_STATUS(g_byStatus, ERPS);
-#endif //TEST_ERPS
-        
         g_wLastDebounceTime = millis();
     }
 }
@@ -157,6 +153,8 @@ void getUSThreat(){
   Volt_num= analogRead(USOUND_IN);
   Vm = .00080566 * Volt_num; //.00080566 (12bit at 3.3V)//.003223 (10bit at 3.3V)//.004883 (10bit at 5V)
   d = Vm / 0.006445 / 12; // [ft]
+  DEBUG.print("Distance");
+  DEBUG.println(d, DEC);
   if(d < US_MIN_DISTANCE){
     g_byThreat = 1;
   } else {
@@ -176,7 +174,8 @@ void flashRearLEDS() {
             digitalWrite(USOUND_LT, g_byUsoundLtPinState);
         }
     } else {
-        if(!g_byUsoundLtPinState){
+      //digitalWrite(USOUND_LT, LOW);
+        if(g_byUsoundLtPinState){
             g_byUsoundLtPinState = LOW;
             digitalWrite(USOUND_LT, g_byUsoundLtPinState);
         }
@@ -198,7 +197,7 @@ void changeBrakeLight(){
         }
     }
     else {
-        if(!g_byBrakeLtPinState){
+        if(g_byBrakeLtPinState){
             g_byBrakeCounter = 0;
             g_byBrakeLtPinState = LOW;
             digitalWrite(BRAKE_LT, g_byBrakeLtPinState);

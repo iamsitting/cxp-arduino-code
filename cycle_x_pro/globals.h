@@ -72,7 +72,7 @@ extern uint8_t ind;
 #define ERPS            2
 #define BTCON           3
 #define ERPS_ACK        4
-#define POSS_ACC		5
+#define POSS_ACC		    5
 
 /** Modes **/
 #define MODE_IDLE       0

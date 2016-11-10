@@ -12,11 +12,11 @@
 #include "globals.h"
 #include "types.h"
 
-#define DEBOUNCE_DELAY 200
+#define DEBOUNCE_DELAY 300
 #define FLASH_INTERVAL 100
 #define REAR_FLASH_INTERVAL 100
 
-#define US_MIN_DISTANCE 30
+#define US_MIN_DISTANCE 20
 
 extern volatile uint8_t g_byChangedToSimple;
 extern volatile uint32_t g_wLastDebounceTime;
