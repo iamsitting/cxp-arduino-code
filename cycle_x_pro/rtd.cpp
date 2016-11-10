@@ -15,8 +15,6 @@
 void getLocation(){
     g_fLongitude.bits32 = gps.location.lng();
     g_fLatitude.bits32 = gps.location.lat();
-    g_fLongitude.bits32 = -96.328360;
-    g_fLatitude.bits32 = 30.633797;
     
 }
 

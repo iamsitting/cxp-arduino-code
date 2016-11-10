@@ -7,7 +7,7 @@
 //              team14
 //
 // Date         9/22/16 9:40 AM
-// Version      3.0.3
+// Version      3.0.4
 //
 // Copyright    © Carlos Salamanca, 2016
 // Licence      MIT
@@ -77,7 +77,7 @@ uint8_t g_byOppUserName[NAME_SIZE];
 Floater32_t g_fSpeed;
 Floater32_t g_fDistance;
 Floater32_t g_fCalories;
-Floater32_t g_fLatitude;
+Floater32_t g_fLatitude; 
 Floater32_t g_fLongitude;
 TinyGPSPlus gps;
 BMI160GenClass Bmi;
@@ -113,6 +113,11 @@ void setup() {
 /** Switches between modes of operation i.e the "OS" **/
 void loop() {
 
+    //0. Read GPS
+    while(GP20U7.available() > 0){
+      gps.encode(GP20U7.read());
+    }
+
     //1. switch flashing pattern
     DEBUG.println("ALS Stuff");
     //switchFlashingPattern();
@@ -147,6 +152,8 @@ void loop() {
     DEBUG.println(CHECK_STATUS(g_byStatus, ERPS));
     DEBUG.print("    Latitude!!   ");
     DEBUG.println(g_fLatitude.bits32);
+    DEBUG.print("    Speed!!   ");
+    DEBUG.println(g_fSpeed.bits32);
     
     //DEBUG.write('\n');
 //#endif

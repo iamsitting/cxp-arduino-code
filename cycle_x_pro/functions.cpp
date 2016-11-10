@@ -70,20 +70,25 @@ void updateData2(){
     
     switch(g_byNextUpdate){
         case 0:
+        //getSpeed() getDistance()
             g_fSpeed.bits32 = generateData(ind++);
+            //getSpeed();
             g_fDistance.bits32 = g_fSpeed.bits32 + 5;
             g_byNextUpdate++;
             break;
         case 1:
             //TODO: add to als
+            //getBatteryLevel()
             g_byBatteryLevel = 90;
             g_byNextUpdate++;
             break;
         case 2:
+        //getCalories()
             g_fCalories.bits32 = g_fSpeed.bits32 + 5;
             g_byNextUpdate++;
             break;
         case 3:
+        //getThreat()
             g_byThreat = 0;
             g_byNextUpdate++;
             break;

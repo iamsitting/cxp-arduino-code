@@ -6,9 +6,13 @@ This project contains the embedded software for the Cycle X-Pro. This project is
 
 ### Version
 
-3.0.3
+3.0.4
 
 ### Most Recent Changes
+
+3.0.4
+- GPS Tested
+- Location and Speed tested
 
 3.0.3
 - ALS Integration tested

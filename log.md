@@ -1,5 +1,9 @@
 ## Log
 
+3.0.4
+- GPS Tested
+- Location and Speed tested
+
 3.0.3
 - ALS Integration tested
 - ADS/ERPS Integration tested
