@@ -6,9 +6,14 @@ This project contains the embedded software for the Cycle X-Pro. This project is
 
 ### Version
 
-3.0.4
+3.0.5
 
 ### Most Recent Changes
+
+3.0.5
+- Integrated Power software (Untested)
+- Added BatteryLevel Reading
+- Added Generator Relay Control
 
 3.0.4
 - GPS Tested
@@ -25,17 +30,6 @@ This project contains the embedded software for the Cycle X-Pro. This project is
 3.0.1
 - Added Name/Weight Parameters (Untested)
 - Reorganized functions
-
-3.0.0
-- Integrated RTD & ADS (Untested)
-- Added TinyGPS++ and BMI160 libraries
-- Integrated TRIO (Untested)
-- Integrated ALS, Threat and Brake feature (Untested)
-- Switched from C to C++ files
-
-2.2.1
-- Race Mode Tested
-- Count misses for reliability
 
 ## Code Design
 

@@ -34,7 +34,9 @@ extern uint8_t ind;
 #define ALSPIN1     	11
 #define BRAKE_LT    	12
 #define USOUND_LT   	13
-#define ALS_BUTTON_PIN 	47
+#define ALS_BUTTON 	47
+#define BATTERY A1
+#define RELAY 6
 
 #define ADS_INT1    48
 #define ADS_INT2    50

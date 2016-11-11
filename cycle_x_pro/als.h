@@ -32,6 +32,7 @@ extern uint8_t g_byBatteryLevel;
 extern uint8_t g_byThreat;
 extern uint8_t g_byBrakeCounter;
 extern uint8_t g_byBrakeLtPinState;
+extern uint8_t g_byRelayState;
 
 #ifdef __cplusplus
 extern "C" {
@@ -52,6 +53,9 @@ extern "C" {
     void getUSThreat(void);
     void setupALS(void);
     void changeBrakeLight(void);
+    void getBatteryLevel(void);
+    uint8_t roundTo5(float32_t x);
+    void switchRelay(void);
     
     
 #ifdef __cplusplus

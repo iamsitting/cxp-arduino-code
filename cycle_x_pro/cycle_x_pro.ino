@@ -7,7 +7,7 @@
 //              team14
 //
 // Date         9/22/16 9:40 AM
-// Version      3.0.4
+// Version      3.0.5
 //
 // Copyright    © Carlos Salamanca, 2016
 // Licence      MIT
@@ -60,6 +60,7 @@ uint8_t g_byBatteryLevel = 90;
 uint8_t g_byThreat = 0;
 uint8_t g_byBrakeCounter = 0;
 uint8_t g_byBrakeLtPinState = 0;
+uint8_t g_byRelayState = 0;
 
 //TRIO
 uint8_t g_byXbeeRecvPacket[XBEE_BUFFER_SIZE];

@@ -205,15 +205,67 @@ void changeBrakeLight(){
     }
 }
 
+void getBatteryLevel(){
+  float32_t percent, Vadc, Vbat;
+  percent = 0;
+  Vadc = analogRead(BATTERY);
+  Vbat = .00080566 * Vadc * 12.8 / 2.5;
+
+  if (Vbat >= 12.6){
+    //TODO: implement state of charge
+      //charge = 1;   
+  }
+  else if (Vbat <= 9){
+      percent = 0;
+      //charge = 0;    
+  }
+  else if (Vbat < 12.6 && Vbat > 9){
+      percent = (Vbat - 9)/3.6 * 100;
+  }
+  
+  g_byBatteryLevel = roundTo5(percent);
+}
+
+uint8_t roundTo5(float32_t x){
+  uint8_t z,rem;  
+  z = (uint8_t) round(x);
+  rem = z%5;
+
+  if (rem >= 2.5){
+     z += (5-rem);   
+  }
+  else{
+     z-= rem; 
+  }
+  return z;
+}
+
+void switchRelay(){
+  if(g_fSpeed.bits32 > 25){
+    if(!g_byRelayState){
+      g_byRelayState = HIGH;
+      digitalWrite(RELAY,g_byRelayState); 
+    }
+  } else{
+    if(g_byRelayState){
+      g_byRelayState = LOW;
+      digitalWrite(RELAY,g_byRelayState);
+    }
+  }
+}
+
+
 void setupALS(){
     pinMode(ALSPIN1, OUTPUT);
     pinMode(ALSPIN2, OUTPUT);
     pinMode(ALSPIN3, OUTPUT);
     pinMode(USOUND_LT, OUTPUT);
     pinMode(BRAKE_LT, OUTPUT);
+    pinMode(BATTERY, INPUT);
+    pinMode(RELAY, OUTPUT);
     pinMode(USOUND_IN, INPUT);
     analogReadResolution(12);
-    pinMode(ALS_BUTTON_PIN, INPUT);
-    attachInterrupt(digitalPinToInterrupt(ALS_BUTTON_PIN), ALSButton_isr, RISING);
+    pinMode(ALS_BUTTON, INPUT);
+    attachInterrupt(digitalPinToInterrupt(ALS_BUTTON), ALSButton_isr, RISING);
 }
 /********************* Written by Tyler Henderson *************************/

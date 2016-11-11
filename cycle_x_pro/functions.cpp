@@ -42,12 +42,13 @@ void updateData(){
     switch(g_byNextUpdate){
         case 0:
             getSpeed();
+            switchRelay();
             getDistance();
             g_byNextUpdate++;
             break;
         case 1:
             //TODO: add to als
-            updateBatteryLevel();
+            getBatteryLevel();
             g_byNextUpdate++;
             break;
         case 2:

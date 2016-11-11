@@ -1,5 +1,10 @@
 ## Log
 
+3.0.5
+- Integrated Power software (Untested)
+- Added BatteryLevel Reading
+- Added Generator Relay Control
+
 3.0.4
 - GPS Tested
 - Location and Speed tested
