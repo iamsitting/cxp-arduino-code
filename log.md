@@ -1,5 +1,8 @@
 ## Log
 
+3.0.6
+- Added AT Command Functions (Untested)
+
 3.0.5
 - Integrated Power software (Untested)
 - Added BatteryLevel Reading
