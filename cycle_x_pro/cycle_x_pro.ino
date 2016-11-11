@@ -7,7 +7,7 @@
 //              team14
 //
 // Date         9/22/16 9:40 AM
-// Version      3.0.5
+// Version      3.0.6
 //
 // Copyright    © Carlos Salamanca, 2016
 // Licence      MIT
@@ -73,6 +73,8 @@ Floater32_t g_fOppLongitude;
 Floater32_t g_fOppLatitude;
 uint8_t g_byUserName[NAME_SIZE];
 uint8_t g_byOppUserName[NAME_SIZE];
+uint8_t g_byMyTRIOid = 0;
+uint8_t g_byDestTRIOid = 0;
 
 //ADS & RTD
 Floater32_t g_fSpeed;

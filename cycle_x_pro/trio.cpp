@@ -196,6 +196,101 @@ void XbeeSendMessage(){
     }
 }
 
+uint8_t ATcheckOK(){
+  uint8_t packet[3];
+  uint8_t success = 0;
+  XBPRO.readBytes(packet, 3);
+  if(packet[0] == 'O')
+    if(packet[1] == 'K')
+      success = 1;
+  return success;
+}
+
+uint8_t ATCN(){
+  uint8_t packet[5];
+  packet[0] = 'A';
+  packet[1] = 'T';
+  packet[2] = 'C';
+  packet[3] = 'N';
+  packet[4] = 13; //<ENTER>
+  XBPRO.write(packet, 5);
+  delay(100);
+  return ATcheckOK();
+}
+
+uint8_t ATenterCommand(){
+  uint8_t packet[3];
+  packet[0] = '+';
+  packet[1] = '+';
+  packet[2] = '+';
+  delay(GUARD_TIME);
+  XBPRO.write(packet, 3);
+  delay(GUARD_TIME);
+  return ATcheckOK();
+}
+
+uint8_t ATDH(uint8_t addr){
+  uint8_t packet[6];
+  packet[0] = 'A';
+  packet[1] = 'T';
+  packet[2] = 'D';
+  packet[3] = 'H';
+  packet[4] = addr;
+  packet[5] = 13;
+  XBPRO.write(packet, 6);
+  delay(100);
+  return ATcheckOK();
+}
+
+uint8_t ATDL(uint8_t addr){
+  uint8_t packet[6];
+  packet[0] = 'A';
+  packet[1] = 'T';
+  packet[2] = 'D';
+  packet[3] = 'L';
+  packet[4] = addr;
+  packet[5] = 13;
+  XBPRO.write(packet, 6);
+  delay(100);
+  return ATcheckOK();
+}
+
+uint8_t ATMY(uint8_t addr){
+  uint8_t packet[6];
+  packet[0] = 'A';
+  packet[1] = 'T';
+  packet[2] = 'M';
+  packet[3] = 'Y';
+  packet[4] = addr;
+  packet[5] = 13;
+  XBPRO.write(packet, 6);
+  delay(100);
+  return ATcheckOK();
+}
+
+uint8_t ATWR(){
+  uint8_t packet[5];
+  packet[0] = 'A';
+  packet[1] = 'T';
+  packet[2] = 'W';
+  packet[3] = 'R';
+  packet[4] = 13;
+  XBPRO.write(packet,5);
+  delay(100);
+  return ATcheckOK();
+}
+
+uint8_t XBeeConfigure(){
+  uint8_t success = 0;
+  if(ATenterCommand())
+    if(ATDH(0))
+      if(ATDL(g_byDestTRIOid))
+        if(ATMY(g_byMyTRIOid))
+          if(ATWR())
+            if(ATCN())
+              success = 1;
+  return success;
+}
 void setupTrio(){
     XBPRO.begin(XBEE_BAUD);
 }

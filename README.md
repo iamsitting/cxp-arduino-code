@@ -6,9 +6,12 @@ This project contains the embedded software for the Cycle X-Pro. This project is
 
 ### Version
 
-3.0.5
+3.0.6
 
 ### Most Recent Changes
+
+3.0.6
+- Added AT Command Functions (Untested)
 
 3.0.5
 - Integrated Power software (Untested)

@@ -16,6 +16,7 @@
 #define XBEE_BAUD 9600
 #define START_BYTE 0x7E
 #define NAME_SIZE 8
+#define GUARD_TIME 1000
 
 #define TRIO_INIT 3
 #define TRIO_TRAIN 1
@@ -26,6 +27,9 @@
 
 #define TRIO_ATHLETE 0
 #define TRIO_COACH 1
+
+extern uint8_t g_byMyTRIOid;
+extern uint8_t g_byDestTRIOid;
 
 extern uint8_t g_byXbeeRecvPacket[XBEE_BUFFER_SIZE];
 extern uint8_t g_byXbeeSendPacket[XBEE_BUFFER_SIZE];
@@ -51,6 +55,15 @@ extern "C" {
     void XBeeSendMessage(void);
     void XBeeReceive(void);
     void setupTrio(void);
+
+    /** XBEE Commands **/
+    uint8_t ATcheckOK();
+    uint8_t ATenterCommand();
+    uint8_t ATDH(uint8_t addr);
+    uint8_t ATDL(uint8_t addr);
+    uint8_t ATMY(uint8_t addr);
+    uint8_t ATWR();
+    uint8_t ATCN();
     
     
 #ifdef __cplusplus
