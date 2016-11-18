@@ -6,9 +6,14 @@ This project contains the embedded software for the Cycle X-Pro. This project is
 
 ### Version
 
-3.0.6
+3.0.7
 
 ### Most Recent Changes
+
+3.0.7
+- Tested AT commands
+- Added New Xbee settings
+- Added handshake to protocol
 
 3.0.6
 - Added AT Command Functions (Untested)
@@ -26,13 +31,6 @@ This project contains the embedded software for the Cycle X-Pro. This project is
 - ALS Integration tested
 - ADS/ERPS Integration tested
 - Lat & Long come out to 0
-
-3.0.2
-- Edited for consisten data types
-
-3.0.1
-- Added Name/Weight Parameters (Untested)
-- Reorganized functions
 
 ## Code Design
 

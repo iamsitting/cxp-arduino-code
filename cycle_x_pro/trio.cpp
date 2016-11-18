@@ -22,77 +22,72 @@ void XBeeBuildMessage(uint8_t protocol){
     
     switch (protocol) {
         case TRIO_INIT:
-            packet[i++] = TRIO_INIT;
-            packet[i++] = CHECK_STATUS(g_byStatus, ERPS);
-            packet[i++] = 'C';
-            packet[i++] = 'A';
-            packet[i++] = 'R';
-            packet[i++] = 'L';
-            packet[i++] = 'O';
-            packet[i++] = 'S';
-            packet[i++] = '7';
-            packet[i++] = '8';
-            break;
-        case TRIO_TRAIN:
-            if(g_byMode == MODE_ATHLETE){
-                //if not ERPS
-                if(!CHECK_STATUS(g_byStatus, ERPS)){
-                    packet[i++] = START_BYTE;
-                    packet[i++] = TRIO_ERPS_0;
-                    packet[i++] = g_byMode; //TODO: verify
-                    packet[i++] = g_fSpeed.by.te0;
-                    packet[i++] = g_fSpeed.by.te1;
-                    packet[i++] = g_fSpeed.by.te2;
-                    packet[i++] = g_fSpeed.by.te3;
-                    packet[i++] = g_fDistance.by.te0;
-                    packet[i++] = g_fDistance.by.te1;
-                    packet[i++] = g_fDistance.by.te2;
-                    packet[i++] = g_fDistance.by.te3;
-                } else {
-                    //if ERPS
-                    packet[i++] = START_BYTE;
-                    packet[i++] = g_byMode; //TODO: verify
-                    packet[i++] = TRIO_ERPS_1; //my_erps
-                    packet[i++] = g_fLatitude.by.te0;
-                    packet[i++] = g_fLatitude.by.te1;
-                    packet[i++] = g_fLatitude.by.te2;
-                    packet[i++] = g_fLatitude.by.te3;
-                    packet[i++] = g_fLongitude.by.te0;
-                    packet[i++] = g_fLongitude.by.te1;
-                    packet[i++] = g_fLongitude.by.te2;
-                    packet[i++] = g_fLongitude.by.te3;
-                    //payload[11] = my_ERPS_time;
-                }
+            packet[i++] = protocol;
+            packet[i++] = CHECK_STATUS(g_byStatus, ERPS) >> ERPS;
+            for(c = 0; c < NAME_SIZE; c++)
+            {
+              packet[i++] = g_byUserName[c];
             }
+            
             break;
         case TRIO_RACE:
-            if(!CHECK_STATUS(g_byStatus, ERPS)){
-                packet[i++] = START_BYTE;
-                packet[i++] = TRIO_RACE;
-                packet[i++] = TRIO_ERPS_0;
-                packet[i++] = g_fSpeed.by.te0;
-                packet[i++] = g_fSpeed.by.te1;
-                packet[i++] = g_fSpeed.by.te2;
-                packet[i++] = g_fSpeed.by.te3;
-                packet[i++] = g_fDistance.by.te0;
-                packet[i++] = g_fDistance.by.te1;
-                packet[i++] = g_fDistance.by.te2;
-                packet[i++] = g_fDistance.by.te3;
+            packet[i++] = START_BYTE;
+            packet[i++] = protocol;
+            if(CHECK_STATUS(g_byStatus, ERPS)) {
+              packet[i++] = TRIO_ERPS_1;
+              packet[i++] = g_fLatitude.by.te0;
+              packet[i++] = g_fLatitude.by.te1;
+              packet[i++] = g_fLatitude.by.te2;
+              packet[i++] = g_fLatitude.by.te3;
+              packet[i++] = g_fLongitude.by.te0;
+              packet[i++] = g_fLongitude.by.te1;
+              packet[i++] = g_fLongitude.by.te2;
+              packet[i++] = g_fLongitude.by.te3;
+              //get time
             } else {
-                packet[i++] = START_BYTE;
-                packet[i++] = g_byMode; //TODO: verify
-                packet[i++] = TRIO_ERPS_1; //my_erps
-                packet[i++] = g_fLatitude.by.te0;
-                packet[i++] = g_fLatitude.by.te1;
-                packet[i++] = g_fLatitude.by.te2;
-                packet[i++] = g_fLatitude.by.te3;
-                packet[i++] = g_fLongitude.by.te0;
-                packet[i++] = g_fLongitude.by.te1;
-                packet[i++] = g_fLongitude.by.te2;
-                packet[i++] = g_fLongitude.by.te3;
-                //payload[11] = my_ERPS_time;
+              packet[i++] = TRIO_ERPS_0;
+              packet[i++] = g_fSpeed.by.te0;
+              packet[i++] = g_fSpeed.by.te1;
+              packet[i++] = g_fSpeed.by.te2;
+              packet[i++] = g_fSpeed.by.te3;
+              packet[i++] = g_fDistance.by.te0;
+              packet[i++] = g_fDistance.by.te1;
+              packet[i++] = g_fDistance.by.te2;
+              packet[i++] = g_fDistance.by.te3;
+              }
+            
+            break;
+        case TRIO_ATHLETE:
+            packet[i++] = START_BYTE;
+            packet[i++] = protocol;
+            if(CHECK_STATUS(g_byStatus, ERPS)) {
+              packet[i++] = TRIO_ERPS_1;
+              packet[i++] = g_fLatitude.by.te0;
+              packet[i++] = g_fLatitude.by.te1;
+              packet[i++] = g_fLatitude.by.te2;
+              packet[i++] = g_fLatitude.by.te3;
+              packet[i++] = g_fLongitude.by.te0;
+              packet[i++] = g_fLongitude.by.te1;
+              packet[i++] = g_fLongitude.by.te2;
+              packet[i++] = g_fLongitude.by.te3;
+              //get time
+            } else {
+              packet[i++] = TRIO_ERPS_0;
+              packet[i++] = g_fSpeed.by.te0;
+              packet[i++] = g_fSpeed.by.te1;
+              packet[i++] = g_fSpeed.by.te2;
+              packet[i++] = g_fSpeed.by.te3;
+              packet[i++] = g_fDistance.by.te0;
+              packet[i++] = g_fDistance.by.te1;
+              packet[i++] = g_fDistance.by.te2;
+              packet[i++] = g_fDistance.by.te3;
+              packet[i++] = g_fCalories.by.te0;
+              packet[i++] = g_fCalories.by.te1;
+              packet[i++] = g_fCalories.by.te2;
+              packet[i++] = g_fCalories.by.te3;
             }
             break;
+
         default:
             break;
     }
@@ -104,64 +99,70 @@ void XBeeBuildMessage(uint8_t protocol){
 }
 
 void XBeeDeconstructMessage(){
-    if(g_byXbeeRecvPacket[0] == START_BYTE){
-        switch (g_byXbeeRecvPacket[1]) {
-            case TRIO_INIT:
-                //do
+    uint8_t i = 0;
+    if(g_byXbeeRecvPacket[i++] == START_BYTE){
+        switch (g_byXbeeRecvPacket[i++]) {
+            case TRIO_READY:
+                g_byTRIOisReady = 1;
                 break;
-            case TRIO_TRAIN:
-                if(g_byXbeeRecvPacket[2] == TRIO_ERPS_0){
-                    
-                    if(g_byXbeeRecvPacket[3] == TRIO_ATHLETE){
-                        //Do not recv
-                    } else if(g_byXbeeRecvPacket[3] == TRIO_COACH){
-                        g_fOppSpeed.by.te0 = g_byXbeeRecvPacket[4];
-                        g_fOppSpeed.by.te1 = g_byXbeeRecvPacket[5];
-                        g_fOppSpeed.by.te2 = g_byXbeeRecvPacket[6];
-                        g_fOppSpeed.by.te3 = g_byXbeeRecvPacket[7];
-                        
-                        g_fOppDistance.by.te0 = g_byXbeeRecvPacket[8];
-                        g_fOppDistance.by.te1 = g_byXbeeRecvPacket[9];
-                        g_fOppDistance.by.te2 = g_byXbeeRecvPacket[10];
-                        g_fOppDistance.by.te3 = g_byXbeeRecvPacket[11];
-                    }
-                } else if(g_byXbeeRecvPacket[2] == TRIO_ERPS_1){
-                    g_fOppLatitude.by.te0 = g_byXbeeRecvPacket[3];
-                    g_fOppLatitude.by.te1 = g_byXbeeRecvPacket[4];
-                    g_fOppLatitude.by.te2 = g_byXbeeRecvPacket[5];
-                    g_fOppLatitude.by.te3 = g_byXbeeRecvPacket[6];
-                    
-                    g_fOppLongitude.by.te0 = g_byXbeeRecvPacket[7];
-                    g_fOppLongitude.by.te1 = g_byXbeeRecvPacket[8];
-                    g_fOppLongitude.by.te2 = g_byXbeeRecvPacket[9];
-                    g_fOppLongitude.by.te3 = g_byXbeeRecvPacket[10];
-                    
-                    //erps time
-                }
-                break;
+            case TRIO_ATHLETE:
+                switch(g_byXbeeRecvPacket[i++]) {
+                  case TRIO_ERPS_0:
+                    g_fOppSpeed.by.te0 = g_byXbeeRecvPacket[i++];
+                    g_fOppSpeed.by.te1 = g_byXbeeRecvPacket[i++];
+                    g_fOppSpeed.by.te2 = g_byXbeeRecvPacket[i++];
+                    g_fOppSpeed.by.te3 = g_byXbeeRecvPacket[i++];
+
+                    g_fOppDistance.by.te0 = g_byXbeeRecvPacket[i++];
+                    g_fOppDistance.by.te1 = g_byXbeeRecvPacket[i++];
+                    g_fOppDistance.by.te2 = g_byXbeeRecvPacket[i++];
+                    g_fOppDistance.by.te3 = g_byXbeeRecvPacket[i++];
+
+                    g_fOppCalories.by.te0 = g_byXbeeRecvPacket[i++];
+                    g_fOppCalories.by.te1 = g_byXbeeRecvPacket[i++];
+                    g_fOppCalories.by.te2 = g_byXbeeRecvPacket[i++];
+                    g_fOppCalories.by.te3 = g_byXbeeRecvPacket[i++];
+                    break;
+                  case TRIO_ERPS_1:
+                    g_fOppERPS = TRIO_ERPS_1;
+                    g_fOppLatitude.by.te3  = g_byXbeeRecvPacket[i++];
+                    g_fOppLatitude.by.te2  = g_byXbeeRecvPacket[i++];
+                    g_fOppLatitude.by.te1  = g_byXbeeRecvPacket[i++];
+                    g_fOppLatitude.by.te0  = g_byXbeeRecvPacket[i++];
+
+                    g_fOppLongitude.by.te3  = g_byXbeeRecvPacket[i++];
+                    g_fOppLongitude.by.te2  = g_byXbeeRecvPacket[i++];
+                    g_fOppLongitude.by.te1  = g_byXbeeRecvPacket[i++];
+                    g_fOppLongitude.by.te0  = g_byXbeeRecvPacket[i++];
+
+                    //getTime
+                    break;
             case TRIO_RACE:
-                if(g_byXbeeRecvPacket[2] == TRIO_ERPS_0){
-                    g_fOppSpeed.by.te0 = g_byXbeeRecvPacket[3];
-                    g_fOppSpeed.by.te1 = g_byXbeeRecvPacket[4];
-                    g_fOppSpeed.by.te2 = g_byXbeeRecvPacket[5];
-                    g_fOppSpeed.by.te3 = g_byXbeeRecvPacket[6];
-                    
-                    g_fOppDistance.by.te0 = g_byXbeeRecvPacket[7];
-                    g_fOppDistance.by.te1 = g_byXbeeRecvPacket[8];
-                    g_fOppDistance.by.te2 = g_byXbeeRecvPacket[9];
-                    g_fOppDistance.by.te3 = g_byXbeeRecvPacket[10];
-                } else if(g_byXbeeRecvPacket[2] == TRIO_ERPS_1){
-                    g_fOppLatitude.by.te0 = g_byXbeeRecvPacket[3];
-                    g_fOppLatitude.by.te1 = g_byXbeeRecvPacket[4];
-                    g_fOppLatitude.by.te2 = g_byXbeeRecvPacket[5];
-                    g_fOppLatitude.by.te3 = g_byXbeeRecvPacket[6];
-                    
-                    g_fOppLongitude.by.te0 = g_byXbeeRecvPacket[7];
-                    g_fOppLongitude.by.te1 = g_byXbeeRecvPacket[8];
-                    g_fOppLongitude.by.te2 = g_byXbeeRecvPacket[9];
-                    g_fOppLongitude.by.te3 = g_byXbeeRecvPacket[10];
-                    
-                    //erps time
+                switch(g_byXbeeRecvPacket[i++]) {
+                  case TRIO_ERPS_0:
+                    g_fOppSpeed.by.te0 = g_byXbeeRecvPacket[i++];
+                    g_fOppSpeed.by.te1 = g_byXbeeRecvPacket[i++];
+                    g_fOppSpeed.by.te2 = g_byXbeeRecvPacket[i++];
+                    g_fOppSpeed.by.te3 = g_byXbeeRecvPacket[i++];
+
+                    g_fOppDistance.by.te0 = g_byXbeeRecvPacket[i++];
+                    g_fOppDistance.by.te1 = g_byXbeeRecvPacket[i++];
+                    g_fOppDistance.by.te2 = g_byXbeeRecvPacket[i++];
+                    g_fOppDistance.by.te3 = g_byXbeeRecvPacket[i++];
+
+                    //compare distance
+                    break;
+                  case TRIO_ERPS_1:
+                    g_fOppLatitude.by.te3  = g_byXbeeRecvPacket[i++];
+                    g_fOppLatitude.by.te2  = g_byXbeeRecvPacket[i++];
+                    g_fOppLatitude.by.te1  = g_byXbeeRecvPacket[i++];
+                    g_fOppLatitude.by.te0  = g_byXbeeRecvPacket[i++];
+
+                    g_fOppLongitude.by.te3  = g_byXbeeRecvPacket[i++];
+                    g_fOppLongitude.by.te2  = g_byXbeeRecvPacket[i++];
+                    g_fOppLongitude.by.te1  = g_byXbeeRecvPacket[i++];
+                    g_fOppLongitude.by.te0  = g_byXbeeRecvPacket[i++];
+                    //getTime
                 }
                 break;
             default:
@@ -169,6 +170,7 @@ void XBeeDeconstructMessage(){
         }
         
     }
+  }
 }
 
 void XBeeReceive(){
@@ -179,10 +181,28 @@ void XBeeReceive(){
 }
 
 void XbeeSendMessage(){
-    //TODO: add cases
     switch(g_byMode) {
         case MODE_IDLE:
-            __asm__("nop\n\t");
+            if(g_byXbeeisConfig){
+              if(!g_byTRIOisInit){
+                XBeeBuildMessage(TRIO_INIT);
+                g_byTRIOisInit = 1;
+              }
+            }
+            break;
+        case MODE_ATHLETE:
+            if(g_byTRIOisInit){
+              if(g_byTRIOisReady){
+                XBeeBuildMessage(TRIO_ATHLETE);
+              }
+            }
+            break;
+        case MODE_RACE:
+            if(g_byTRIOisInit){
+              if(g_byTRIOisReady){
+                XBeeBuildMessage(TRIO_RACE);
+              }
+            }
             break;
         default:
             __asm__("nop\n\t");
@@ -193,6 +213,7 @@ void XbeeSendMessage(){
     if(g_byXbeeSendFlag){
         XBPRO.write(g_byXbeeSendPacket, XBEE_BUFFER_SIZE);
         g_byXbeeSendFlag = 0;
+        g_byTRIOisReady = 0;
     }
 }
 
@@ -242,21 +263,34 @@ uint8_t ATDH(uint8_t addr){
   return ATcheckOK();
 }
 
-uint8_t ATDL(uint8_t addr){
-  uint8_t packet[6];
-  packet[0] = 'A';
-  packet[1] = 'T';
-  packet[2] = 'D';
-  packet[3] = 'L';
-  packet[4] = addr;
-  packet[5] = 13;
-  XBPRO.write(packet, 6);
+uint8_t ATDL(){
+  uint8_t packet[12];
+  uint8_t i = 0;
+  uint8_t j = 0;
+  packet[i++] = 'A';
+  packet[i++] = 'T';
+  packet[i++] = 'D';
+  packet[i++] = 'L';
+
+  packet[i++] = g_byDestTRIOid[j++];
+  packet[i++] = g_byDestTRIOid[j++];
+  packet[i++] = g_byDestTRIOid[j++];
+  packet[i++] = g_byDestTRIOid[j++];
+
+  packet[i++] = g_byDestTRIOid[j++];
+  packet[i++] = g_byDestTRIOid[j++];
+  packet[i++] = g_byDestTRIOid[j++];
+  packet[i++] = g_byDestTRIOid[j++];
+  
+  packet[12] = 13;
+  XBPRO.write(packet, 12);
   delay(100);
   return ATcheckOK();
 }
 
 uint8_t ATMY(uint8_t addr){
   uint8_t packet[6];
+  uint8_t i = 0;
   packet[0] = 'A';
   packet[1] = 'T';
   packet[2] = 'M';
@@ -280,15 +314,27 @@ uint8_t ATWR(){
   return ATcheckOK();
 }
 
+uint8_t ATSL(){
+  //TODO: Test this command
+  uint8_t packet[5];
+  packet[0] = 'A';
+  packet[1] = 'T';
+  packet[2] = 'S';
+  packet[3] = 'L';
+  packet[4] = 13;
+  XBPRO.write(packet,5);
+  delay(100);
+  XBPRO.readBytes(g_byMyTRIOid, ADDR_SIZE);
+  return 1;
+}
+
 uint8_t XBeeConfigure(){
   uint8_t success = 0;
   if(ATenterCommand())
-    if(ATDH(0))
-      if(ATDL(g_byDestTRIOid))
-        if(ATMY(g_byMyTRIOid))
-          if(ATWR())
-            if(ATCN())
-              success = 1;
+    if(ATDL())  
+      if(ATWR())
+        if(ATCN())
+          success = 1;
   return success;
 }
 void setupTrio(){

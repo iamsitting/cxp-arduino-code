@@ -116,8 +116,26 @@ void BluetoothBuildMessage(uint8_t protocol){
     uint16_t checksum = 0;
     
     switch(protocol){
+        case SEND_HANDSHAKE:
+            packet[i++] = CXP_BYTE;
+            packet[i++] = protocol;
+            packet[i++] = g_byBatteryLevel;
+            packet[i++] = g_byThreat;
+
+            for(c = 0; c < ADDR_SIZE; c++){
+              packet[i++] = g_byMyTRIOid[c];
+            }
+
+            for(c = 0; c < i; c++){
+              checksum += packet[c];
+            }
+
+            packet[i] = checksum & 0xFF;
+            //13
+            break;
+            
         case SEND_IDLE:
-            packet[i++] = 0xA7;
+            packet[i++] = CXP_BYTE;
             packet[i++] = protocol;
             packet[i++] = g_byBatteryLevel;
             packet[i++]= g_byThreat;
@@ -300,6 +318,41 @@ void BluetoothBuildMessage(uint8_t protocol){
             packet[i] = checksum & 0xFF;
             //31
             break;
+        case SEND_COACH:
+            getTime();
+            getRaceData();
+            
+            packet[i++] = 0xA7;
+            packet[i++] = protocol;
+            
+            packet[i++] = g_byBatteryLevel;
+            packet[i++] = 0;
+
+            //athlete-speed
+            packet[i++] = g_fOppSpeed.by.te3;
+            packet[i++] = g_fOppSpeed.by.te2;
+            packet[i++] = g_fOppSpeed.by.te1;
+            packet[i++] = g_fOppSpeed.by.te0;
+            
+            //athlete-distance
+            packet[i++] = g_fOppDistance.by.te3;
+            packet[i++] = g_fOppDistance.by.te2;
+            packet[i++] = g_fOppDistance.by.te1;
+            packet[i++] = g_fOppDistance.by.te0;
+
+            //athlete-calories
+            packet[i++] = g_fCalories.by.te3;
+            packet[i++] = g_fCalories.by.te2;
+            packet[i++] = g_fCalories.by.te1;
+            packet[i++] = g_fCalories.by.te0;
+            
+            for(c = 0; c<i; c++)
+            {
+                checksum += packet[c];
+            }
+            packet[i] = checksum & 0xFF;
+            //31
+            break;
         default:
             break;
     }
@@ -311,21 +364,39 @@ void BluetoothBuildMessage(uint8_t protocol){
     g_byBTSendFlag = 1;
 }
 
-void getNameWeight(){
-    uint8_t i = 0;
-    
-    g_halfWeight = (g_byRecvPacket[1]-30)*100 +
-        (g_byRecvPacket[2]-30)*10 +
-        g_byRecvPacket[3]-30;
-            
-    for(i=0; i<NAME_SIZE; i++){
-        if(g_byRecvPacket[i+4] != '\n'){
-            g_byUserName[i] = g_byRecvPacket[i+4];
+void readHandshake(){
+    uint8_t i = 1;
+    uint8_t j = 0;
+   
+    g_halfWeight = (g_byRecvPacket[i++]-48)*100 +
+        (g_byRecvPacket[i++]-48)*10 +
+        g_byRecvPacket[i++]-48;
+
+    for(j=0; j<NAME_SIZE; j++){
+        if(g_byRecvPacket[i] != '\n'){
+            g_byUserName[j] = g_byRecvPacket[i++];
         } else{
-            g_byUserName[i] = g_byRecvPacket[i+4];
+            g_byUserName[j] = g_byRecvPacket[i++];
+            break;
+        }
+    }
+
+    for(j=0; j<ADDR_SIZE; j++){
+        if(g_byRecvPacket[i] != '\n'){
+            g_byDestTRIOid[j] = g_byRecvPacket[i++];
+        } else{
+            g_byDestTRIOid[j] = g_byRecvPacket[i++];
             break;
         } 
-    }            
+    }
+}
+
+void sendHandshake(){
+  BluetoothBuildMessage(SEND_HANDSHAKE);
+  if(g_byBTSendFlag){
+    HC06.write(g_bySendPacket, BUFFER_SIZE);
+    g_byBTSendFlag = 0;
+    }
 }
 
 void BluetoothDeconstructMessage(){
@@ -334,7 +405,8 @@ void BluetoothDeconstructMessage(){
             //Apply correct Mode of operation and System status
         case 0x43: //C - BT Connected
         case 0x63:
-            getNameWeight();
+            readHandshake();
+            sendHandshake();
             SET_STATUS(g_byStatus, RTS);
             SET_STATUS(g_byStatus, BTCON); //clear on app/BT destroy
             break;
@@ -446,7 +518,6 @@ void BluetoothSend() {
                 //RTD Modes
             case MODE_SOLO:
             case MODE_ATHLETE:
-            case MODE_COACH:
             {
                 uint16_t currentMillis = millis();
                 if(currentMillis - g_wDataMillis > 100) {
@@ -459,6 +530,33 @@ void BluetoothSend() {
                             CLEAR_STATUS(g_byStatus, NEW_SESSION);
                         } else {
                           BluetoothBuildMessage(SEND_DATA);
+                        }
+                        g_byMisses = 0;
+                        CLEAR_STATUS(g_byStatus, RTS);
+                    } else {
+                        g_byMisses++;
+                        if(g_byMisses > MISSES_ALLOWED){
+                            SET_STATUS(g_byStatus, RTS);
+                        }
+                    }
+                    
+                }
+                
+            }
+                break;
+            case MODE_COACH:
+            {
+                uint16_t currentMillis = millis();
+                if(currentMillis - g_wDataMillis > 100) {
+                    g_wDataMillis = currentMillis;
+                    if (CHECK_STATUS(g_byStatus, RTS)) {
+                        
+                        if (CHECK_STATUS(g_byStatus, NEW_SESSION)) {
+                            g_wOffsetTime = millis();
+                            BluetoothBuildMessage(SEND_HEADER);
+                            CLEAR_STATUS(g_byStatus, NEW_SESSION);
+                        } else {
+                          BluetoothBuildMessage(SEND_COACH);
                         }
                         g_byMisses = 0;
                         CLEAR_STATUS(g_byStatus, RTS);

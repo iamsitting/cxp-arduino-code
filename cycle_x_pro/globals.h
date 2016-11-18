@@ -90,11 +90,14 @@ extern uint8_t ind;
 #define SEND_HEADER     2
 #define SEND_ERPS       3
 #define SEND_RACE       4
+#define SEND_COACH		  5
+#define SEND_HANDSHAKE  6
 
 /** BT definitions **/
 #define BAUD_RATE   	9600
 #define BUFFER_SIZE 	32
 #define MISSES_ALLOWED 	15
+#define CXP_BYTE 0xA7
 
 extern uint32_t g_wOffsetTime;
 extern struct timeStamp g_TimeStamp;

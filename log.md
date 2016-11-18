@@ -1,5 +1,10 @@
 ## Log
 
+3.0.7
+- Tested AT commands
+- Added New Xbee settings
+- Added handshake to protocol
+
 3.0.6
 - Added AT Command Functions (Untested)
 

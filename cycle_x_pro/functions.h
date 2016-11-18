@@ -29,7 +29,8 @@ extern "C" {
     void udpateBatteryLevel(void);
     void getRaceData(void);
     void updateData(void);
-    void getNameWeight(void);
+    void readHandshake(void);
+    void sendHandshake(void);
     void updateData2(void);
 
     

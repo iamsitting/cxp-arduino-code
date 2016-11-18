@@ -7,7 +7,7 @@
 //              team14
 //
 // Date         9/22/16 9:40 AM
-// Version      3.0.6
+// Version      3.0.7
 //
 // Copyright    © Carlos Salamanca, 2016
 // Licence      MIT
@@ -67,14 +67,19 @@ uint8_t g_byXbeeRecvPacket[XBEE_BUFFER_SIZE];
 uint8_t g_byXbeeSendPacket[XBEE_BUFFER_SIZE];
 uint8_t g_byXbeeSendFlag = 0;
 uint8_t g_byXbeeRecvFlag = 0;
+uint8_t g_byXbeeisConfig = 0;
 Floater32_t g_fOppSpeed;
 Floater32_t g_fOppDistance;
+Floater32_t g_fOppCalories;
 Floater32_t g_fOppLongitude;
 Floater32_t g_fOppLatitude;
+uint8_t g_fOppERPS = 0;
 uint8_t g_byUserName[NAME_SIZE];
 uint8_t g_byOppUserName[NAME_SIZE];
-uint8_t g_byMyTRIOid = 0;
-uint8_t g_byDestTRIOid = 0;
+uint8_t g_byMyTRIOid[ADDR_SIZE];
+uint8_t g_byDestTRIOid[ADDR_SIZE];
+uint8_t g_byTRIOisInit;
+uint8_t g_byTRIOisReady = 0;
 
 //ADS & RTD
 Floater32_t g_fSpeed;
@@ -99,6 +104,17 @@ float32_t sine_test[32] = {512,611,707,796,873,937,984,1013,1023,1013,984,937,87
 
 
 void setup() {
+  uint8_t t = 0;
+  g_byMyTRIOid[t++] = 'A';
+  g_byMyTRIOid[t++] = 'B';
+  g_byMyTRIOid[t++] = 'C';
+  g_byMyTRIOid[t++] = 'D';
+  
+  g_byMyTRIOid[t++] = 'E';
+  g_byMyTRIOid[t++] = 'F';
+  g_byMyTRIOid[t++] = 'A';
+  g_byMyTRIOid[t++] = '1';
+  
     HC06.begin(BAUD_RATE);
     
     setupALS();
@@ -110,11 +126,16 @@ void setup() {
     pinMode(PIN51, OUTPUT);
     pinMode(PIN49, OUTPUT);
 #endif
-
+  
 }
 
 /** Switches between modes of operation i.e the "OS" **/
 void loop() {
+
+    //0. configure Xbee
+    if(!g_byXbeeisConfig){
+        //g_byXbeeisConfig = XBeeConfigure();
+    }
 
     //0. Read GPS
     while(GP20U7.available() > 0){
@@ -149,14 +170,21 @@ void loop() {
     DEBUG.println(g_byMode);
     DEBUG.print("    Speed   ");
     DEBUG.println(g_fSpeed.bits32, DEC);
-    DEBUG.print("    Poss. Accident   ");
-    DEBUG.println(CHECK_STATUS(g_byStatus, POSS_ACC));
+    DEBUG.print("    Status   ");
+    DEBUG.println(g_byStatus, BIN);
     DEBUG.print("    ERPS!!   ");
     DEBUG.println(CHECK_STATUS(g_byStatus, ERPS));
     DEBUG.print("    Latitude!!   ");
     DEBUG.println(g_fLatitude.bits32);
     DEBUG.print("    Speed!!   ");
     DEBUG.println(g_fSpeed.bits32);
+    DEBUG.print("    Weight!!   ");
+    DEBUG.println(g_halfWeight, DEC);
+    DEBUG.print("    Name!!   ");
+    DEBUG.write(g_byUserName, NAME_SIZE);
+    DEBUG.print("    Dest!!   ");
+    DEBUG.write(g_byDestTRIOid, ADDR_SIZE);
+    DEBUG.write('\n');
     
     //DEBUG.write('\n');
 //#endif
