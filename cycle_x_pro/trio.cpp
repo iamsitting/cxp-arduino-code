@@ -13,6 +13,7 @@
 #include "trio.h"
 #include "rtd.h"
 
+uint8_t miss = 0;
 /********************* Written by Fernando Romo *************************/
 void XBeeBuildMessage(uint8_t protocol){
     uint8_t packet[XBEE_BUFFER_SIZE];
@@ -87,7 +88,10 @@ void XBeeBuildMessage(uint8_t protocol){
               packet[i++] = g_fCalories.by.te3;
             }
             break;
-
+        case TRIO_READY:
+            packet[i++] = START_BYTE;
+            packet[i++] = protocol;
+            break;
         default:
             break;
     }
@@ -101,8 +105,13 @@ void XBeeBuildMessage(uint8_t protocol){
 void XBeeDeconstructMessage(){
     uint8_t i = 0;
     if(g_byXbeeRecvPacket[i++] == START_BYTE){
+      g_byTRIOisReady = 1;
         switch (g_byXbeeRecvPacket[i++]) {
+            case TRIO_INIT:
+                DEBUG.println("INIT RECEIVED");
+                break;
             case TRIO_READY:
+                DEBUG.println("He's Ready");
                 g_byTRIOisReady = 1;
                 break;
             case TRIO_ATHLETE:
@@ -137,7 +146,12 @@ void XBeeDeconstructMessage(){
 
                     //getTime
                     break;
+                  default:
+                    break;
+                }
+                break;
             case TRIO_RACE:
+                DEBUG.println("DECON RACE MODE....");
                 switch(g_byXbeeRecvPacket[i++]) {
                   case TRIO_ERPS_0:
                     g_fOppSpeed.by.te0 = g_byXbeeRecvPacket[i++];
@@ -171,20 +185,26 @@ void XBeeDeconstructMessage(){
         
     }
   }
-}
 
 void XBeeReceive(){
     if(XBPRO.available() > 0){
         XBPRO.readBytes(g_byXbeeRecvPacket, XBEE_BUFFER_SIZE);
         g_byXbeeRecvFlag = 1;
+        DEBUG.println("RECEIVE...");
+        DEBUG.println(g_byXbeeRecvPacket[0], DEC);
+        DEBUG.println(g_byXbeeRecvPacket[1], DEC);
+        DEBUG.println(g_byXbeeRecvPacket[2], DEC);
+        XBPRO.flush();
     }
 }
 
 void XbeeSendMessage(){
+  DEBUG.println("SENDING....");
     switch(g_byMode) {
         case MODE_IDLE:
             if(g_byXbeeisConfig){
               if(!g_byTRIOisInit){
+                DEBUG.println("Initialize");
                 XBeeBuildMessage(TRIO_INIT);
                 g_byTRIOisInit = 1;
               }
@@ -194,13 +214,24 @@ void XbeeSendMessage(){
             if(g_byTRIOisInit){
               if(g_byTRIOisReady){
                 XBeeBuildMessage(TRIO_ATHLETE);
+                g_byTRIOisReady = 0;
               }
             }
             break;
         case MODE_RACE:
             if(g_byTRIOisInit){
               if(g_byTRIOisReady){
+                g_byTRIOisReady = 0;
+                DEBUG.println("IN RACE MODE....");
                 XBeeBuildMessage(TRIO_RACE);
+              } else {
+                miss += 1;
+                if(miss > 20){
+                  miss = 0;
+                  g_byTRIOisReady = 1;
+                }
+                
+                //XBeeBuildMessage(TRIO_READY);
               }
             }
             break;
@@ -212,8 +243,11 @@ void XbeeSendMessage(){
     /** XBEE Sending function **/
     if(g_byXbeeSendFlag){
         XBPRO.write(g_byXbeeSendPacket, XBEE_BUFFER_SIZE);
+        DEBUG.println("SENDING Packet:");
+        DEBUG.println(g_byXbeeSendPacket[0], DEC);
+        DEBUG.println(g_byXbeeSendPacket[1], DEC);
+        DEBUG.println(g_byXbeeSendPacket[2], DEC);
         g_byXbeeSendFlag = 0;
-        g_byTRIOisReady = 0;
     }
 }
 
@@ -250,6 +284,20 @@ uint8_t ATenterCommand(){
   return ATcheckOK();
 }
 
+uint8_t ATDL_RESET(){
+  uint8_t packet[6];
+  packet[0] = 'A';
+  packet[1] = 'T';
+  packet[2] = 'D';
+  packet[3] = 'L';
+  packet[4] = '0';
+  packet[5] = 13;
+  XBPRO.write(packet,6);
+  delay(100);
+  return ATcheckOK();
+  
+  
+}
 uint8_t ATDH(uint8_t addr){
   uint8_t packet[6];
   packet[0] = 'A';
@@ -271,6 +319,10 @@ uint8_t ATDL(){
   packet[i++] = 'T';
   packet[i++] = 'D';
   packet[i++] = 'L';
+
+  DEBUG.println("ATDL");
+  DEBUG.write(g_byDestTRIOid, ADDR_SIZE);
+  DEBUG.write('\n');
 
   packet[i++] = g_byDestTRIOid[j++];
   packet[i++] = g_byDestTRIOid[j++];
@@ -330,13 +382,26 @@ uint8_t ATSL(){
 
 uint8_t XBeeConfigure(){
   uint8_t success = 0;
-  if(ATenterCommand())
-    if(ATDL())  
-      if(ATWR())
-        if(ATCN())
-          success = 1;
+  if(ATenterCommand()){
+    DEBUG.println("S1");
+    if(ATDL_RESET()){
+      DEBUG.println("S2");
+      if(ATDL()){
+        DEBUG.println("S3");
+        if(ATWR()){
+          DEBUG.println("S4");
+          if(ATCN()){
+            DEBUG.println("S5");
+            success = 1;
+          }
+        }
+      }
+    }
+  }
+         
   return success;
 }
 void setupTrio(){
     XBPRO.begin(XBEE_BAUD);
+    delay(3000);
 }

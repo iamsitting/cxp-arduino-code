@@ -72,7 +72,7 @@ void updateData2(){
     switch(g_byNextUpdate){
         case 0:
         //getSpeed() getDistance()
-            g_fSpeed.bits32 = generateData(ind++);
+            g_fSpeed.bits32 = generateData(ind++)/20.0;
             //getSpeed();
             g_fDistance.bits32 = g_fSpeed.bits32 + 5;
             g_byNextUpdate++;
@@ -265,7 +265,6 @@ void BluetoothBuildMessage(uint8_t protocol){
             break;
         case SEND_RACE:
             getTime();
-            getRaceData();
             
             packet[i++] = 0xA7;
             packet[i++] = protocol;

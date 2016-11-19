@@ -1,5 +1,8 @@
 ## Log
 
+3.0.8
+- Race Mode Tested
+
 3.0.7
 - Tested AT commands
 - Added New Xbee settings

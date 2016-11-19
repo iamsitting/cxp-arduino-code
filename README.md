@@ -6,9 +6,12 @@ This project contains the embedded software for the Cycle X-Pro. This project is
 
 ### Version
 
-3.0.7
+3.0.8
 
 ### Most Recent Changes
+
+3.0.8
+- Race Mode Tested
 
 3.0.7
 - Tested AT commands

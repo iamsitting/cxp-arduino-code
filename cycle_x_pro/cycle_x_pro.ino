@@ -7,7 +7,7 @@
 //              team14
 //
 // Date         9/22/16 9:40 AM
-// Version      3.0.7
+// Version      3.0.8
 //
 // Copyright    © Carlos Salamanca, 2016
 // Licence      MIT
@@ -101,24 +101,36 @@ uint8_t g_byGPSMisses = 0;
 //#define ALS_TEST
 uint8_t ind = 0;
 float32_t sine_test[32] = {512,611,707,796,873,937,984,1013,1023,1013,984,937,873,796,707,611,512,412,316,227,150,86,39,10,0,10,39,86,150,227,316,412};
-
+uint8_t test = 0;
 
 void setup() {
   uint8_t t = 0;
-  g_byMyTRIOid[t++] = 'A';
+  /*
+  g_byMyTRIOid[t++] = '4';
+  g_byMyTRIOid[t++] = '0';
   g_byMyTRIOid[t++] = 'B';
-  g_byMyTRIOid[t++] = 'C';
   g_byMyTRIOid[t++] = 'D';
   
+  g_byMyTRIOid[t++] = 'B';
+  g_byMyTRIOid[t++] = '1';
   g_byMyTRIOid[t++] = 'E';
-  g_byMyTRIOid[t++] = 'F';
+  g_byMyTRIOid[t++] = 'C';
+  */
+  g_byMyTRIOid[t++] = '4';
+  g_byMyTRIOid[t++] = '0';
+  g_byMyTRIOid[t++] = 'E';
+  g_byMyTRIOid[t++] = '6';
+  
+  g_byMyTRIOid[t++] = '5';
   g_byMyTRIOid[t++] = 'A';
+  g_byMyTRIOid[t++] = 'E';
   g_byMyTRIOid[t++] = '1';
   
     HC06.begin(BAUD_RATE);
     
     setupALS();
     setupRTD();
+    setupTrio();
     
 #ifdef TEST_CODE
     DEBUG.begin(9600);
@@ -133,8 +145,14 @@ void setup() {
 void loop() {
 
     //0. configure Xbee
-    if(!g_byXbeeisConfig){
-        //g_byXbeeisConfig = XBeeConfigure();
+    if(CHECK_STATUS(g_byStatus, BTCON)){
+      if(!g_byXbeeisConfig){
+        DEBUG.println("Configuring...");
+        //test = XBeeConfigure();
+        delay(500);
+        DEBUG.println(test);
+        g_byXbeeisConfig = 1;
+      }
     }
 
     //0. Read GPS
@@ -174,10 +192,10 @@ void loop() {
     DEBUG.println(g_byStatus, BIN);
     DEBUG.print("    ERPS!!   ");
     DEBUG.println(CHECK_STATUS(g_byStatus, ERPS));
-    DEBUG.print("    Latitude!!   ");
-    DEBUG.println(g_fLatitude.bits32);
-    DEBUG.print("    Speed!!   ");
-    DEBUG.println(g_fSpeed.bits32);
+    DEBUG.print("    Opp. Speed!!   ");
+    DEBUG.println(g_fOppSpeed.bits32, DEC);
+    DEBUG.print("    Opp. Distance!!   ");
+    DEBUG.println(g_fOppDistance.bits32, DEC);
     DEBUG.print("    Weight!!   ");
     DEBUG.println(g_halfWeight, DEC);
     DEBUG.print("    Name!!   ");
@@ -194,17 +212,18 @@ void loop() {
     getUSThreat();
     updateData2();
 
-    //5. receive trio
-    //XBeeReceive();
-
-    //5. Listen for TRIO
-    if(g_byXbeeRecvFlag){
+    if(g_byMode == MODE_RACE){ //add athlete and coach
+      //5. receive trio
+      XBeeReceive();
+      
+      //5. Listen for TRIO
+      if(g_byXbeeRecvFlag){
         g_byXbeeRecvFlag = 0;
         XBeeDeconstructMessage();
+      }
     }
-    
-    //6. Build & Send to Opponent
-    //XbeeSendMessage();
+      //6. Build & Send to Opponent
+      XbeeSendMessage();
 
     //7. Send message to App
     BluetoothSend();

@@ -17,7 +17,7 @@
 #define START_BYTE 0x7E
 #define NAME_SIZE 10
 #define ADDR_SIZE 8
-#define GUARD_TIME 1000
+#define GUARD_TIME 1500
 
 
 #define TRIO_SOLO 0
@@ -68,7 +68,7 @@ extern "C" {
     /** TRIO Functions **/
     void XBeeDeconstructMessage(void);
     void XBeeBuildMessage(uint8_t protocol);
-    void XBeeSendMessage(void);
+    void XbeeSendMessage(void);
     void XBeeReceive(void);
     void setupTrio(void);
 
