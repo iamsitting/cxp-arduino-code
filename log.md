@@ -1,5 +1,8 @@
 ## Log
 
+3.0.9
+- Updated AT Commands
+
 3.0.8
 - Race Mode Tested
 

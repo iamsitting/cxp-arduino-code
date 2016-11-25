@@ -13,7 +13,8 @@
 #include "trio.h"
 #include "rtd.h"
 
-uint8_t miss = 0;
+uint8_t ATSLmisses = 0;
+uint8_t ATHLmisses = 0;
 /********************* Written by Fernando Romo *************************/
 void XBeeBuildMessage(uint8_t protocol){
     uint8_t packet[XBEE_BUFFER_SIZE];
@@ -215,6 +216,8 @@ void XbeeSendMessage(){
               if(g_byTRIOisReady){
                 XBeeBuildMessage(TRIO_ATHLETE);
                 g_byTRIOisReady = 0;
+              } else {
+                countMiss();
               }
             }
             break;
@@ -225,11 +228,7 @@ void XbeeSendMessage(){
                 DEBUG.println("IN RACE MODE....");
                 XBeeBuildMessage(TRIO_RACE);
               } else {
-                miss += 1;
-                if(miss > 20){
-                  miss = 0;
-                  g_byTRIOisReady = 1;
-                }
+                countMiss();
                 
                 //XBeeBuildMessage(TRIO_READY);
               }
@@ -311,6 +310,30 @@ uint8_t ATDH(uint8_t addr){
   return ATcheckOK();
 }
 
+uint8_t ATDL_READ(){
+  uint8_t packet[5];
+  uint8_t check[8];
+  uint8_t i = 0;
+  uint8_t j = 0;
+  uint8_t success = 0;
+  packet[i++] = 'A';
+  packet[i++] = 'T';
+  packet[i++] = 'D';
+  packet[i++] = 'L';
+  packet[i++] = 13;
+  delay(200);
+  XBPRO.readBytes(check, 8);
+  DEBUG.println("ATDL_READ");
+  DEBUG.write(check, 8);
+  DEBUG.write('\n');
+  for(j = 0; j < 8; j++){
+    if(g_byDestTRIOid[j] != check[j]){
+      return 0;
+    }
+  }
+  return 1;
+}
+
 uint8_t ATDL(){
   uint8_t packet[12];
   uint8_t i = 0;
@@ -336,7 +359,7 @@ uint8_t ATDL(){
   
   packet[12] = 13;
   XBPRO.write(packet, 12);
-  delay(100);
+  delay(200);
   return ATcheckOK();
 }
 
@@ -377,10 +400,76 @@ uint8_t ATSL(){
   XBPRO.write(packet,5);
   delay(100);
   XBPRO.readBytes(g_byMyTRIOid, ADDR_SIZE);
+  DEBUG.println("MY TRIO ID");
+  DEBUG.write(g_byMyTRIOid, ADDR_SIZE);
   return 1;
 }
 
 uint8_t XBeeConfigure(){
+  uint8_t successATSL = 0;
+  uint8_t successATHL = 0;
+  uint8_t done = 0;
+
+  while(!done){
+    if(!successATSL){
+      //successATSL = XBeeATSL();
+      if(XBeeATSL() || (ATSLmisses > 10)){
+        successATSL = 1;
+      }
+      ATSLmisses++;
+    }
+
+    if(!successATHL){
+      //successATHL = XBeeATHL();
+      if(XBeeATHL() || (ATHLmisses > 5)){
+        successATHL = 1;
+      }
+      ATHLmisses++;
+    }
+
+    if(successATSL && successATHL){
+      ATSLmisses = 0;
+      ATHLmisses = 0;
+      done = 1;
+      DEBUG.println("Configuration Complete!");
+    }
+  }
+  
+}
+
+uint8_t XBeeATSL(){
+  uint8_t success = 0;
+   if(ATenterCommand()){
+    if(ATSL()){
+      DEBUG.println("Successfully Read Serial Low");
+      success = 1;
+    }
+  }
+  return success;
+}
+
+uint8_t XBeeATHL(){
+  uint8_t success = 0;
+  if(ATenterCommand()){
+    if(ATDL_READ()){
+        success = 1;
+      } else {
+        if(ATDL()){
+          DEBUG.println("ATDL");
+          if(ATWR()){
+            DEBUG.println("ATWR");
+            if(ATCN()){
+              success = 1;
+              Serial.println("Successfully Configured Destinantion Address");
+            }
+          }
+        }
+      }     
+    }
+  return success;
+}
+/*
+uint8_t XBeeConfigure2(){
   uint8_t success = 0;
   if(ATenterCommand()){
     DEBUG.println("S1");
@@ -400,6 +489,14 @@ uint8_t XBeeConfigure(){
   }
          
   return success;
+}
+*/
+void countMiss(){
+  g_byXbeemisses += 1;
+  if(g_byXbeemisses  > 20){
+    g_byXbeemisses  = 0;
+    g_byTRIOisReady = 1;
+    }
 }
 void setupTrio(){
     XBPRO.begin(XBEE_BAUD);

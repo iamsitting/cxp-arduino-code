@@ -7,7 +7,7 @@
 //              team14
 //
 // Date         9/22/16 9:40 AM
-// Version      3.0.8
+// Version      3.0.9
 //
 // Copyright    © Carlos Salamanca, 2016
 // Licence      MIT
@@ -68,6 +68,7 @@ uint8_t g_byXbeeSendPacket[XBEE_BUFFER_SIZE];
 uint8_t g_byXbeeSendFlag = 0;
 uint8_t g_byXbeeRecvFlag = 0;
 uint8_t g_byXbeeisConfig = 0;
+uint8_t g_byXbeemisses = 0;
 Floater32_t g_fOppSpeed;
 Floater32_t g_fOppDistance;
 Floater32_t g_fOppCalories;
@@ -129,7 +130,9 @@ void setup() {
     HC06.begin(BAUD_RATE);
     
     setupALS();
+#ifndef TEST_CODE
     setupRTD();
+#endif
     setupTrio();
     
 #ifdef TEST_CODE
@@ -148,18 +151,18 @@ void loop() {
     if(CHECK_STATUS(g_byStatus, BTCON)){
       if(!g_byXbeeisConfig){
         DEBUG.println("Configuring...");
-        //test = XBeeConfigure();
-        delay(500);
-        DEBUG.println(test);
+        XBeeConfigure();
+        sendHandshake();
+        //delay(500);
         g_byXbeeisConfig = 1;
       }
     }
-
+#ifndef TEST_CODE
     //0. Read GPS
     while(GP20U7.available() > 0){
       gps.encode(GP20U7.read());
     }
-
+#endif
     //1. switch flashing pattern
     DEBUG.println("ALS Stuff");
     //switchFlashingPattern();
@@ -209,8 +212,12 @@ void loop() {
 
     //4. update data
     //updateData();
+#ifndef TEST_CODE
     getUSThreat();
+    updateData();
+#else
     updateData2();
+#endif
 
     if(g_byMode == MODE_RACE){ //add athlete and coach
       //5. receive trio

@@ -94,7 +94,7 @@ void updateData2(){
             g_byNextUpdate++;
             break;
         case 4:
-            getLocation();
+            //getLocation();
             g_byNextUpdate++;
             break;
         case 5:
@@ -102,7 +102,7 @@ void updateData2(){
             g_byNextUpdate++;
             break;
         case 6:
-            getADS();
+            //getADS();
         default:
             g_byNextUpdate = 0;
             
@@ -405,7 +405,6 @@ void BluetoothDeconstructMessage(){
         case 0x43: //C - BT Connected
         case 0x63:
             readHandshake();
-            sendHandshake();
             SET_STATUS(g_byStatus, RTS);
             SET_STATUS(g_byStatus, BTCON); //clear on app/BT destroy
             break;

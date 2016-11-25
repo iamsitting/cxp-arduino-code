@@ -17,7 +17,7 @@
 #define START_BYTE 0x7E
 #define NAME_SIZE 10
 #define ADDR_SIZE 8
-#define GUARD_TIME 1500
+#define GUARD_TIME 1000
 
 
 #define TRIO_SOLO 0
@@ -49,6 +49,7 @@ extern uint8_t g_byXbeeSendPacket[XBEE_BUFFER_SIZE];
 extern uint8_t g_byXbeeSendFlag;
 extern uint8_t g_byXbeeRecvFlag;
 extern uint8_t g_byXbeeisConfig;
+extern uint8_t g_byXbeemisses;
 
 extern union Floater32_t g_fOppSpeed;
 extern union Floater32_t g_fOppDistance;
@@ -71,6 +72,7 @@ extern "C" {
     void XbeeSendMessage(void);
     void XBeeReceive(void);
     void setupTrio(void);
+    void countMiss(void);
 
     /** XBEE Commands **/
     uint8_t ATcheckOK(void);
@@ -81,7 +83,11 @@ extern "C" {
     uint8_t ATWR(void);
     uint8_t ATCN(void);
     uint8_t ATSL(void);
+    uint8_t XBeeATSL(void);
+    uint8_t XBeeATHL(void);
     uint8_t XBeeConfigure(void);
+
+    
     
     
     
