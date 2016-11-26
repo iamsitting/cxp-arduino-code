@@ -33,6 +33,7 @@ extern uint8_t g_byThreat;
 extern uint8_t g_byBrakeCounter;
 extern uint8_t g_byBrakeLtPinState;
 extern uint8_t g_byRelayState;
+extern uint8_t g_byStateOfCharge;
 
 #ifdef __cplusplus
 extern "C" {

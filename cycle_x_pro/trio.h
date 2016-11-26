@@ -59,6 +59,7 @@ extern union Floater32_t g_fOppLatitude;
 extern uint8_t g_fOppERPS;
 extern uint8_t g_byUserName[NAME_SIZE];
 extern uint8_t g_byOppUserName[NAME_SIZE];
+extern uint8_t g_byWinning;
 
 #ifdef __cplusplus
 extern "C" {
@@ -79,6 +80,7 @@ extern "C" {
     uint8_t ATenterCommand(void);
     uint8_t ATDH(uint8_t addr);
     uint8_t ATDL();
+    uint8_t ATDL_READ();
     uint8_t ATMY(uint8_t addr);
     uint8_t ATWR(void);
     uint8_t ATCN(void);

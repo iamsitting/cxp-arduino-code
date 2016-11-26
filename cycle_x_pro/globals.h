@@ -86,7 +86,7 @@ extern uint8_t ind;
 
 /** Protocols **/
 #define SEND_IDLE       27
-#define SEND_DATA       1
+#define SEND_DATA       1 //Also for athelete
 #define SEND_HEADER     2
 #define SEND_ERPS       3
 #define SEND_RACE       4
@@ -95,7 +95,7 @@ extern uint8_t ind;
 
 /** BT definitions **/
 #define BAUD_RATE   	9600
-#define BUFFER_SIZE 	32
+#define BUFFER_SIZE 	40
 #define MISSES_ALLOWED 	15
 #define CXP_BYTE 0xA7
 

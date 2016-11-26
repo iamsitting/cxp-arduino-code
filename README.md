@@ -6,9 +6,13 @@ This project contains the embedded software for the Cycle X-Pro. This project is
 
 ### Version
 
-3.0.9
+3.0.10
 
 ### Most Recent Changes
+
+3.0.10
+- Added state of charge
+- Added Coach mode to protocol
 
 3.0.9
 - Updated AT Commands
@@ -28,15 +32,6 @@ This project contains the embedded software for the Cycle X-Pro. This project is
 - Integrated Power software (Untested)
 - Added BatteryLevel Reading
 - Added Generator Relay Control
-
-3.0.4
-- GPS Tested
-- Location and Speed tested
-
-3.0.3
-- ALS Integration tested
-- ADS/ERPS Integration tested
-- Lat & Long come out to 0
 
 ## Code Design
 

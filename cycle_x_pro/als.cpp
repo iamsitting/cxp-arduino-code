@@ -212,15 +212,15 @@ void getBatteryLevel(){
   Vbat = .00080566 * Vadc * 12.8 / 2.5;
 
   if (Vbat >= 12.6){
-    //TODO: implement state of charge
-      //charge = 1;   
+    g_byStateOfCharge = 1;
   }
   else if (Vbat <= 9){
       percent = 0;
-      //charge = 0;    
+      g_byStateOfCharge = 0;
   }
   else if (Vbat < 12.6 && Vbat > 9){
       percent = (Vbat - 9)/3.6 * 100;
+      g_byStateOfCharge = 0;
   }
   
   g_byBatteryLevel = roundTo5(percent);

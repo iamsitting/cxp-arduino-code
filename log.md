@@ -1,5 +1,9 @@
 ## Log
 
+3.0.10
+- Added state of charge
+- Added Coach mode to protocol
+
 3.0.9
 - Updated AT Commands
 

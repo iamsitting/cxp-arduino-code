@@ -47,7 +47,6 @@ void updateData(){
             g_byNextUpdate++;
             break;
         case 1:
-            //TODO: add to als
             getBatteryLevel();
             g_byNextUpdate++;
             break;
@@ -72,14 +71,13 @@ void updateData2(){
     switch(g_byNextUpdate){
         case 0:
         //getSpeed() getDistance()
-            g_fSpeed.bits32 = generateData(ind++)/20.0;
+        ind = (ind + 1 == 32 ? 0: ind + 1);
+            g_fSpeed.bits32 = generateData(ind)/20.0;
             //getSpeed();
             g_fDistance.bits32 = g_fSpeed.bits32 + 5;
             g_byNextUpdate++;
             break;
         case 1:
-            //TODO: add to als
-            //getBatteryLevel()
             g_byBatteryLevel = 90;
             g_byNextUpdate++;
             break;
@@ -121,6 +119,7 @@ void BluetoothBuildMessage(uint8_t protocol){
             packet[i++] = protocol;
             packet[i++] = g_byBatteryLevel;
             packet[i++] = g_byThreat;
+            packet[i++] = g_byStateOfCharge;
 
             for(c = 0; c < ADDR_SIZE; c++){
               packet[i++] = g_byMyTRIOid[c];
@@ -131,26 +130,26 @@ void BluetoothBuildMessage(uint8_t protocol){
             }
 
             packet[i] = checksum & 0xFF;
-            //13
+            //14
             break;
             
         case SEND_IDLE:
             packet[i++] = CXP_BYTE;
             packet[i++] = protocol;
             packet[i++] = g_byBatteryLevel;
-            packet[i++]= g_byThreat;
+            packet[i++] = g_byThreat;
+            packet[i++] = g_byStateOfCharge;
             packet[i++] = 2;
             packet[i++] = 3;
             packet[i++] = 4;
             packet[i++] = 5;
-            packet[i++] = 6;
             
             for(c = 0; c < i; c++){
                 checksum += packet[c];
             }
             
             packet[i] = checksum & 0xFF;
-            //10
+            //11
             break;
         case SEND_DATA:
             getTime();
@@ -160,6 +159,7 @@ void BluetoothBuildMessage(uint8_t protocol){
             
             packet[i++] = g_byBatteryLevel;
             packet[i++] = g_byThreat;
+            packet[i++] = g_byStateOfCharge;
             
             //time
             packet[i++] = g_TimeStamp.hour;
@@ -193,7 +193,7 @@ void BluetoothBuildMessage(uint8_t protocol){
             }
             
             packet[i] = checksum & 0xFF;
-            //23
+            //24
             
             break;
         case SEND_HEADER:
@@ -238,8 +238,7 @@ void BluetoothBuildMessage(uint8_t protocol){
             }
             packet[i] = checksum & 0xFF;
             //31
-            
-            
+           
             break;
         case SEND_ERPS:
             
@@ -271,6 +270,7 @@ void BluetoothBuildMessage(uint8_t protocol){
             
             packet[i++] = g_byBatteryLevel;
             packet[i++] = g_byThreat;
+            packet[i++] = g_byStateOfCharge;
             
             //time
             packet[i++] = g_TimeStamp.hour;
@@ -309,23 +309,32 @@ void BluetoothBuildMessage(uint8_t protocol){
             packet[i++] = g_fOppDistance.by.te2;
             packet[i++] = g_fOppDistance.by.te1;
             packet[i++] = g_fOppDistance.by.te0;
+
+            packet[i++] = g_byWinning;
             
             for(c = 0; c<i; c++)
             {
                 checksum += packet[c];
             }
             packet[i] = checksum & 0xFF;
-            //31
+            //33
             break;
         case SEND_COACH:
-            getTime();
-            getRaceData();
             
             packet[i++] = 0xA7;
             packet[i++] = protocol;
             
             packet[i++] = g_byBatteryLevel;
             packet[i++] = 0;
+            packet[i++] = g_byStateOfCharge;
+
+            //time //TODO: Add to App
+            packet[i++] = g_TimeStamp.hour;
+            packet[i++] = g_TimeStamp.minute;
+            packet[i++] = g_TimeStamp.second.by.te3;
+            packet[i++] = g_TimeStamp.second.by.te2;
+            packet[i++] = g_TimeStamp.second.by.te1;
+            packet[i++] = g_TimeStamp.second.by.te0;
 
             //athlete-speed
             packet[i++] = g_fOppSpeed.by.te3;
@@ -340,17 +349,17 @@ void BluetoothBuildMessage(uint8_t protocol){
             packet[i++] = g_fOppDistance.by.te0;
 
             //athlete-calories
-            packet[i++] = g_fCalories.by.te3;
-            packet[i++] = g_fCalories.by.te2;
-            packet[i++] = g_fCalories.by.te1;
-            packet[i++] = g_fCalories.by.te0;
+            packet[i++] = g_fOppCalories.by.te3;
+            packet[i++] = g_fOppCalories.by.te2;
+            packet[i++] = g_fOppCalories.by.te1;
+            packet[i++] = g_fOppCalories.by.te0;
             
             for(c = 0; c<i; c++)
             {
                 checksum += packet[c];
             }
             packet[i] = checksum & 0xFF;
-            //31
+            //24
             break;
         default:
             break;

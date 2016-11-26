@@ -87,6 +87,13 @@ void XBeeBuildMessage(uint8_t protocol){
               packet[i++] = g_fCalories.by.te1;
               packet[i++] = g_fCalories.by.te2;
               packet[i++] = g_fCalories.by.te3;
+              
+              packet[i++] = g_TimeStamp.hour;
+              packet[i++] = g_TimeStamp.minute;
+              packet[i++] = g_TimeStamp.second.by.te3;
+              packet[i++] = g_TimeStamp.second.by.te2;
+              packet[i++] = g_TimeStamp.second.by.te1;
+              packet[i++] = g_TimeStamp.second.by.te0;
             }
             break;
         case TRIO_READY:
@@ -132,6 +139,13 @@ void XBeeDeconstructMessage(){
                     g_fOppCalories.by.te1 = g_byXbeeRecvPacket[i++];
                     g_fOppCalories.by.te2 = g_byXbeeRecvPacket[i++];
                     g_fOppCalories.by.te3 = g_byXbeeRecvPacket[i++];
+
+                    g_TimeStamp.hour = g_byXbeeRecvPacket[i++];
+                    g_TimeStamp.minute = g_byXbeeRecvPacket[i++];
+                    g_TimeStamp.second.by.te3 = g_byXbeeRecvPacket[i++];
+                    g_TimeStamp.second.by.te2 = g_byXbeeRecvPacket[i++];
+                    g_TimeStamp.second.by.te1 = g_byXbeeRecvPacket[i++];
+                    g_TimeStamp.second.by.te0 = g_byXbeeRecvPacket[i++];
                     break;
                   case TRIO_ERPS_1:
                     g_fOppERPS = TRIO_ERPS_1;
@@ -152,7 +166,6 @@ void XBeeDeconstructMessage(){
                 }
                 break;
             case TRIO_RACE:
-                DEBUG.println("DECON RACE MODE....");
                 switch(g_byXbeeRecvPacket[i++]) {
                   case TRIO_ERPS_0:
                     g_fOppSpeed.by.te0 = g_byXbeeRecvPacket[i++];
@@ -165,7 +178,11 @@ void XBeeDeconstructMessage(){
                     g_fOppDistance.by.te2 = g_byXbeeRecvPacket[i++];
                     g_fOppDistance.by.te3 = g_byXbeeRecvPacket[i++];
 
-                    //compare distance
+                    if(g_fDistance.bits32 > g_fOppDistance.bits32){
+                      g_byWinning = 1;
+                    } else {
+                      g_byWinning = 0;
+                    }
                     break;
                   case TRIO_ERPS_1:
                     g_fOppLatitude.by.te3  = g_byXbeeRecvPacket[i++];
@@ -468,29 +485,7 @@ uint8_t XBeeATHL(){
     }
   return success;
 }
-/*
-uint8_t XBeeConfigure2(){
-  uint8_t success = 0;
-  if(ATenterCommand()){
-    DEBUG.println("S1");
-    if(ATDL_RESET()){
-      DEBUG.println("S2");
-      if(ATDL()){
-        DEBUG.println("S3");
-        if(ATWR()){
-          DEBUG.println("S4");
-          if(ATCN()){
-            DEBUG.println("S5");
-            success = 1;
-          }
-        }
-      }
-    }
-  }
-         
-  return success;
-}
-*/
+
 void countMiss(){
   g_byXbeemisses += 1;
   if(g_byXbeemisses  > 20){

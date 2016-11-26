@@ -7,7 +7,7 @@
 //              team14
 //
 // Date         9/22/16 9:40 AM
-// Version      3.0.9
+// Version      3.0.10
 //
 // Copyright    © Carlos Salamanca, 2016
 // Licence      MIT
@@ -61,6 +61,7 @@ uint8_t g_byThreat = 0;
 uint8_t g_byBrakeCounter = 0;
 uint8_t g_byBrakeLtPinState = 0;
 uint8_t g_byRelayState = 0;
+uint8_t g_byStateOfCharge = 0;
 
 //TRIO
 uint8_t g_byXbeeRecvPacket[XBEE_BUFFER_SIZE];
@@ -79,8 +80,9 @@ uint8_t g_byUserName[NAME_SIZE];
 uint8_t g_byOppUserName[NAME_SIZE];
 uint8_t g_byMyTRIOid[ADDR_SIZE];
 uint8_t g_byDestTRIOid[ADDR_SIZE];
-uint8_t g_byTRIOisInit;
+uint8_t g_byTRIOisInit = 0;
 uint8_t g_byTRIOisReady = 0;
+uint8_t g_byWinning = 0;
 
 //ADS & RTD
 Floater32_t g_fSpeed;
@@ -137,9 +139,6 @@ void setup() {
     
 #ifdef TEST_CODE
     DEBUG.begin(9600);
-    pinMode(PIN53, OUTPUT);
-    pinMode(PIN51, OUTPUT);
-    pinMode(PIN49, OUTPUT);
 #endif
   
 }
@@ -152,8 +151,7 @@ void loop() {
       if(!g_byXbeeisConfig){
         DEBUG.println("Configuring...");
         XBeeConfigure();
-        sendHandshake();
-        //delay(500);
+        sendHandshake(); //This is what breaks the App's ProgressDialog
         g_byXbeeisConfig = 1;
       }
     }
@@ -165,10 +163,12 @@ void loop() {
 #endif
     //1. switch flashing pattern
     DEBUG.println("ALS Stuff");
-    //switchFlashingPattern();
-    //flashRearLEDS();
+#ifndef TEST_CODE
+    switchFlashingPattern();
+    flashRearLEDS();
     //To be tested
-    //changeBrakeLight();
+    changeBrakeLight();
+#endif
     
     DEBUG.println("BT Receive");
     //2. listen for commands from App
@@ -207,19 +207,22 @@ void loop() {
     DEBUG.write(g_byDestTRIOid, ADDR_SIZE);
     DEBUG.write('\n');
     
-    //DEBUG.write('\n');
 //#endif
 
     //4. update data
     //updateData();
+    if(g_byMode != MODE_COACH){
 #ifndef TEST_CODE
-    getUSThreat();
-    updateData();
+    
+      getUSThreat();
+      updateData();
+    
 #else
     updateData2();
 #endif
+    }
 
-    if(g_byMode == MODE_RACE){ //add athlete and coach
+    if(g_byMode == MODE_RACE || g_byMode == MODE_COACH){ //add athlete and coach
       //5. receive trio
       XBeeReceive();
       
