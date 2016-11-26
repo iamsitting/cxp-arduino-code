@@ -1,5 +1,9 @@
 ## Log
 
+3.0.13
+- Train Mode Tested
+- Race Mode Tested (Again)
+
 3.0.12
 - bugfix: More Race Mode bugs
 

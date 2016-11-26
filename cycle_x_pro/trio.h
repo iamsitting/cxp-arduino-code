@@ -60,6 +60,7 @@ extern uint8_t g_fOppERPS;
 extern uint8_t g_byUserName[NAME_SIZE];
 extern uint8_t g_byOppUserName[NAME_SIZE];
 extern uint8_t g_byWinning;
+extern uint8_t g_byReadyCount;
 
 #ifdef __cplusplus
 extern "C" {

@@ -7,7 +7,7 @@
 //              team14
 //
 // Date         9/22/16 9:40 AM
-// Version      3.0.12
+// Version      3.0.13
 //
 // Copyright    © Carlos Salamanca, 2016
 // Licence      MIT
@@ -83,6 +83,7 @@ uint8_t g_byDestTRIOid[ADDR_SIZE];
 uint8_t g_byTRIOisInit = 0;
 uint8_t g_byTRIOisReady = 0;
 uint8_t g_byWinning = 0;
+uint8_t g_byReadyCount = 0;
 
 //ADS & RTD
 Floater32_t g_fSpeed;
@@ -222,7 +223,7 @@ void loop() {
 #endif
     }
 
-    if(g_byMode == MODE_RACE || g_byMode == MODE_COACH){ //add athlete and coach
+    if(g_byMode == MODE_RACE || g_byMode == MODE_COACH || g_byMode == MODE_ATHLETE){ //add athlete and coach
       //5. receive trio
       XBeeReceive();
       

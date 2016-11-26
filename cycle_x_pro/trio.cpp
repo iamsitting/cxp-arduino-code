@@ -113,6 +113,7 @@ void XBeeBuildMessage(uint8_t protocol){
 void XBeeDeconstructMessage(){
     uint8_t i = 0;
     if(g_byXbeeRecvPacket[i++] == START_BYTE){
+      DEBUG.println("DECONNING");
       g_byTRIOisReady = 1;
         switch (g_byXbeeRecvPacket[i++]) {
             case TRIO_INIT:
@@ -123,6 +124,9 @@ void XBeeDeconstructMessage(){
                 g_byTRIOisReady = 1;
                 break;
             case TRIO_ATHLETE:
+                if(g_byMode == MODE_COACH){
+                  XBeeBuildMessage(TRIO_READY); //ACK
+                }
                 switch(g_byXbeeRecvPacket[i++]) {
                   case TRIO_ERPS_0:
                     g_fOppSpeed.by.te0 = g_byXbeeRecvPacket[i++];
@@ -249,6 +253,14 @@ void XbeeSendMessage(){
                 
                 //XBeeBuildMessage(TRIO_READY);
               }
+            }
+            break;
+        case MODE_COACH:
+          if(g_byTRIOisInit && (g_byReadyCount > 5)){
+            g_byReadyCount = 0;
+            XBeeBuildMessage(TRIO_READY);
+            } else {
+              g_byReadyCount++;
             }
             break;
         default:
