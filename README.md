@@ -6,9 +6,12 @@ This project contains the embedded software for the Cycle X-Pro. This project is
 
 ### Version
 
-3.0.10
+3.0.11
 
 ### Most Recent Changes
+
+3.0.11
+- bugfix: Handshake and Idle protocol message bug
 
 3.0.10
 - Added state of charge

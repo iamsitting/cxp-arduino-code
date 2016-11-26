@@ -74,7 +74,7 @@ void updateData2(){
         ind = (ind + 1 == 32 ? 0: ind + 1);
             g_fSpeed.bits32 = generateData(ind)/20.0;
             //getSpeed();
-            g_fDistance.bits32 = g_fSpeed.bits32 + 5;
+            getDistance();
             g_byNextUpdate++;
             break;
         case 1:
@@ -149,7 +149,7 @@ void BluetoothBuildMessage(uint8_t protocol){
             }
             
             packet[i] = checksum & 0xFF;
-            //11
+            //10
             break;
         case SEND_DATA:
             getTime();

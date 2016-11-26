@@ -1,5 +1,8 @@
 ## Log
 
+3.0.11
+- bugfix: Handshake and Idle protocol message bug
+
 3.0.10
 - Added state of charge
 - Added Coach mode to protocol
