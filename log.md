@@ -1,5 +1,8 @@
 ## Log
 
+3.0.12
+- bugfix: More Race Mode bugs
+
 3.0.11
 - bugfix: Handshake and Idle protocol message bug
 

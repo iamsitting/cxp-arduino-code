@@ -17,7 +17,7 @@
 #define GPS_BAUD 9600
 #define BMI_PIN 52
 
-#define MIN_SPEED 0.5
+#define MIN_SPEED 1.1
 #define FALSE_ALARM_WINDOW 500
 #define X_DIRECTION 1
 #define Y_DIRECTION 2

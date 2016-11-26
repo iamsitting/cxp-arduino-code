@@ -6,9 +6,12 @@ This project contains the embedded software for the Cycle X-Pro. This project is
 
 ### Version
 
-3.0.11
+3.0.12
 
 ### Most Recent Changes
+
+3.0.12
+- bugfix: More Race Mode bugs
 
 3.0.11
 - bugfix: Handshake and Idle protocol message bug
@@ -27,14 +30,6 @@ This project contains the embedded software for the Cycle X-Pro. This project is
 - Tested AT commands
 - Added New Xbee settings
 - Added handshake to protocol
-
-3.0.6
-- Added AT Command Functions (Untested)
-
-3.0.5
-- Integrated Power software (Untested)
-- Added BatteryLevel Reading
-- Added Generator Relay Control
 
 ## Code Design
 

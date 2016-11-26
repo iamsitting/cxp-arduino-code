@@ -271,6 +271,8 @@ void BluetoothBuildMessage(uint8_t protocol){
             packet[i++] = g_byBatteryLevel;
             packet[i++] = g_byThreat;
             packet[i++] = g_byStateOfCharge;
+
+            packet[i++] = g_byWinning;
             
             //time
             packet[i++] = g_TimeStamp.hour;
@@ -309,8 +311,6 @@ void BluetoothBuildMessage(uint8_t protocol){
             packet[i++] = g_fOppDistance.by.te2;
             packet[i++] = g_fOppDistance.by.te1;
             packet[i++] = g_fOppDistance.by.te0;
-
-            packet[i++] = g_byWinning;
             
             for(c = 0; c<i; c++)
             {
