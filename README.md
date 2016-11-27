@@ -6,9 +6,13 @@ This project contains the embedded software for the Cycle X-Pro. This project is
 
 ### Version
 
-3.0.13
+3.0.15
 
 ### Most Recent Changes
+
+3.0.15
+- Tested Incident Outreach
+- bugfix: TRIO Endianess
 
 3.0.14
 - Added I.O.

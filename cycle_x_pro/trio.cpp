@@ -90,10 +90,10 @@ void XBeeBuildMessage(uint8_t protocol){
               
               packet[i++] = g_TimeStamp.hour;
               packet[i++] = g_TimeStamp.minute;
-              packet[i++] = g_TimeStamp.second.by.te3;
-              packet[i++] = g_TimeStamp.second.by.te2;
-              packet[i++] = g_TimeStamp.second.by.te1;
               packet[i++] = g_TimeStamp.second.by.te0;
+              packet[i++] = g_TimeStamp.second.by.te1;
+              packet[i++] = g_TimeStamp.second.by.te2;
+              packet[i++] = g_TimeStamp.second.by.te3;
             }
             break;
         case TRIO_READY:
@@ -146,22 +146,22 @@ void XBeeDeconstructMessage(){
 
                     g_TimeStamp.hour = g_byXbeeRecvPacket[i++];
                     g_TimeStamp.minute = g_byXbeeRecvPacket[i++];
-                    g_TimeStamp.second.by.te3 = g_byXbeeRecvPacket[i++];
-                    g_TimeStamp.second.by.te2 = g_byXbeeRecvPacket[i++];
-                    g_TimeStamp.second.by.te1 = g_byXbeeRecvPacket[i++];
                     g_TimeStamp.second.by.te0 = g_byXbeeRecvPacket[i++];
+                    g_TimeStamp.second.by.te1 = g_byXbeeRecvPacket[i++];
+                    g_TimeStamp.second.by.te2 = g_byXbeeRecvPacket[i++];
+                    g_TimeStamp.second.by.te3 = g_byXbeeRecvPacket[i++];
                     break;
                   case TRIO_ERPS_1:
                     g_byOppERPS = TRIO_ERPS_1;
-                    g_fOppLatitude.by.te3  = g_byXbeeRecvPacket[i++];
-                    g_fOppLatitude.by.te2  = g_byXbeeRecvPacket[i++];
-                    g_fOppLatitude.by.te1  = g_byXbeeRecvPacket[i++];
                     g_fOppLatitude.by.te0  = g_byXbeeRecvPacket[i++];
+                    g_fOppLatitude.by.te1  = g_byXbeeRecvPacket[i++];
+                    g_fOppLatitude.by.te2  = g_byXbeeRecvPacket[i++];
+                    g_fOppLatitude.by.te3  = g_byXbeeRecvPacket[i++];
 
-                    g_fOppLongitude.by.te3  = g_byXbeeRecvPacket[i++];
-                    g_fOppLongitude.by.te2  = g_byXbeeRecvPacket[i++];
-                    g_fOppLongitude.by.te1  = g_byXbeeRecvPacket[i++];
                     g_fOppLongitude.by.te0  = g_byXbeeRecvPacket[i++];
+                    g_fOppLongitude.by.te1  = g_byXbeeRecvPacket[i++];
+                    g_fOppLongitude.by.te2  = g_byXbeeRecvPacket[i++];
+                    g_fOppLongitude.by.te3  = g_byXbeeRecvPacket[i++];
 
                     //getTime
                     break;
@@ -190,15 +190,15 @@ void XBeeDeconstructMessage(){
                     break;
                   case TRIO_ERPS_1:
                     g_byOppERPS = TRIO_ERPS_1;
-                    g_fOppLatitude.by.te3  = g_byXbeeRecvPacket[i++];
-                    g_fOppLatitude.by.te2  = g_byXbeeRecvPacket[i++];
-                    g_fOppLatitude.by.te1  = g_byXbeeRecvPacket[i++];
                     g_fOppLatitude.by.te0  = g_byXbeeRecvPacket[i++];
+                    g_fOppLatitude.by.te1  = g_byXbeeRecvPacket[i++];
+                    g_fOppLatitude.by.te2  = g_byXbeeRecvPacket[i++];
+                    g_fOppLatitude.by.te3  = g_byXbeeRecvPacket[i++];
 
-                    g_fOppLongitude.by.te3  = g_byXbeeRecvPacket[i++];
-                    g_fOppLongitude.by.te2  = g_byXbeeRecvPacket[i++];
-                    g_fOppLongitude.by.te1  = g_byXbeeRecvPacket[i++];
                     g_fOppLongitude.by.te0  = g_byXbeeRecvPacket[i++];
+                    g_fOppLongitude.by.te1  = g_byXbeeRecvPacket[i++];
+                    g_fOppLongitude.by.te2  = g_byXbeeRecvPacket[i++];
+                    g_fOppLongitude.by.te3  = g_byXbeeRecvPacket[i++];
                     //getTime
                 }
                 break;

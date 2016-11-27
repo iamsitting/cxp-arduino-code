@@ -1,5 +1,9 @@
 ## Log
 
+3.0.15
+- Tested Incident Outreach
+- bugfix: TRIO Endianess
+
 3.0.14
 - Added I.O.
 
