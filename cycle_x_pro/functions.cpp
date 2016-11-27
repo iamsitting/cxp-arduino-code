@@ -241,9 +241,15 @@ void BluetoothBuildMessage(uint8_t protocol){
            
             break;
         case SEND_ERPS:
+            if(g_byOppERPS){
+              g_fLatitude.bits32 = g_fOppLatitude.bits32;
+              g_fLongitude.bits32 = g_fOppLongitude.bits32;
+            }
             
             packet[i++] = 0xA7;
             packet[i++] = protocol;
+
+            packet[i++] = g_byOppERPS;
             
             packet[i++] = g_fLatitude.by.te3;
             packet[i++] = g_fLatitude.by.te2;
@@ -260,7 +266,7 @@ void BluetoothBuildMessage(uint8_t protocol){
                 checksum += packet[c];
             }
             packet[i] = checksum & 0xFF;
-            //11
+            //12
             break;
         case SEND_RACE:
             getTime();
@@ -433,6 +439,7 @@ void BluetoothDeconstructMessage(){
         case 0x51: //Q - End Session
         case 0x71:
             g_byMode = MODE_IDLE;
+            g_byOppERPS = TRIO_ERPS_0;
             CLEAR_STATUS(g_byStatus, NEW_SESSION);
             CLEAR_STATUS(g_byStatus, ERPS);
             CLEAR_STATUS(g_byStatus, ERPS_ACK);
@@ -490,7 +497,7 @@ void BluetoothReceive() {
 
 void BluetoothSend() {
     //if ERPS
-    if(CHECK_STATUS(g_byStatus, ERPS)){
+    if(CHECK_STATUS(g_byStatus, ERPS) || g_byOppERPS){
         if(!CHECK_STATUS(g_byStatus, ERPS_ACK)){
           BluetoothBuildMessage(SEND_ERPS);
             

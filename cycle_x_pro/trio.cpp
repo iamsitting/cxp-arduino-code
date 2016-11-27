@@ -152,7 +152,7 @@ void XBeeDeconstructMessage(){
                     g_TimeStamp.second.by.te0 = g_byXbeeRecvPacket[i++];
                     break;
                   case TRIO_ERPS_1:
-                    g_fOppERPS = TRIO_ERPS_1;
+                    g_byOppERPS = TRIO_ERPS_1;
                     g_fOppLatitude.by.te3  = g_byXbeeRecvPacket[i++];
                     g_fOppLatitude.by.te2  = g_byXbeeRecvPacket[i++];
                     g_fOppLatitude.by.te1  = g_byXbeeRecvPacket[i++];
@@ -189,6 +189,7 @@ void XBeeDeconstructMessage(){
                     }
                     break;
                   case TRIO_ERPS_1:
+                    g_byOppERPS = TRIO_ERPS_1;
                     g_fOppLatitude.by.te3  = g_byXbeeRecvPacket[i++];
                     g_fOppLatitude.by.te2  = g_byXbeeRecvPacket[i++];
                     g_fOppLatitude.by.te1  = g_byXbeeRecvPacket[i++];

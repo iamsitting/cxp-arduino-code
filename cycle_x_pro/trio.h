@@ -56,7 +56,7 @@ extern union Floater32_t g_fOppDistance;
 extern union Floater32_t g_fOppCalories;
 extern union Floater32_t g_fOppLongitude;
 extern union Floater32_t g_fOppLatitude;
-extern uint8_t g_fOppERPS;
+extern uint8_t g_byOppERPS;
 extern uint8_t g_byUserName[NAME_SIZE];
 extern uint8_t g_byOppUserName[NAME_SIZE];
 extern uint8_t g_byWinning;
