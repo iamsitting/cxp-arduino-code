@@ -6,9 +6,13 @@ This project contains the embedded software for the Cycle X-Pro. This project is
 
 ### Version
 
-3.0.15
+4.0.0
 
 ### Most Recent Changes
+
+4.0.0
+- Demo Macros Added
+- DEBUG code is limited
 
 3.0.15
 - Tested Incident Outreach

@@ -10,11 +10,58 @@
 #define globals_h
 
 #include "types.h"
+
+//Master MACROS
+#define DEMO_CODE
+//#define FINAL_CODE
+//#define FINAL_CODE_NO_LEDS
+//#define DEMO_CODE_NO_TRIO
+//#define DEMO_CODE_ONLY_TRIO
+
+
 /* Test Parameters */
+
+//Use TEST_CODE instead of ENABLE_ADS
+//ENABLE_LEDS needs ENABLE_ADS
+
+#ifdef FINAL_CODE //use this
+#define ENABLE_ALS
+#define ENABLE_TRIO
+#define ENABLE_RTD
+#define ENABLE_LEDS
+#endif
+
+#ifdef DEMO_CODE //use this
 #define TEST_CODE
-#define TEST_ISR
-#define ALS_TEST
-//#define TEST_ERPS
+#define TEST_RACE_ERPS
+#define ENABLE_TRIO
+#define ENABLE_ALS
+#endif
+
+#ifdef FINAL_CODE_NO_LEDS
+#define ENABLE_ALS
+#define ENABLE_TRIO
+#define ENABLE_RTD
+#endif
+
+#ifdef DEMO_CODE_NO_TRIO
+#define ENABLE_RTD
+#define ENABLE_ALS
+#define ENABLE_LEDS
+#endif
+
+#ifdef DEMO_CODE_ONLY_TRIO
+#define TEST_CODE
+#define TEST_RACE_ERPS
+#define ENABLE_TRIO
+#endif
+
+//#define TEST_CODE
+//#define TEST_RACE_ERPS
+//#define ENABLE_ALS
+//#define ENABLE_TRIO
+//#define ENABLE_RTD
+
 extern float32_t sine_test[32];
 extern uint8_t ind;
 

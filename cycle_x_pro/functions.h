@@ -26,7 +26,6 @@ extern "C" {
     
     //This is where we'll define the functions to
     void getTime(void);
-    void udpateBatteryLevel(void);
     void getRaceData(void);
     void updateData(void);
     void readHandshake(void);

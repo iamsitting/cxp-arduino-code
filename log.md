@@ -1,5 +1,9 @@
 ## Log
 
+4.0.0
+- Demo Macros Added
+- DEBUG code is limited
+
 3.0.15
 - Tested Incident Outreach
 - bugfix: TRIO Endianess

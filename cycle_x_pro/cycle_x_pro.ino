@@ -7,7 +7,7 @@
 //              team14
 //
 // Date         9/22/16 9:40 AM
-// Version      3.0.15
+// Version      4.0.0
 //
 // Copyright    © Carlos Salamanca, 2016
 // Licence      MIT
@@ -131,15 +131,16 @@ void setup() {
   g_byMyTRIOid[t++] = '1';
   
     HC06.begin(BAUD_RATE);
-    
+    DEBUG.begin(9600);
+#ifdef ENABLE_ALS    
     setupALS();
-#ifndef TEST_CODE
+#endif
+#ifndef ENABLE_RTD
     setupRTD();
 #endif
+
+#ifdef ENABLE_TRIO
     setupTrio();
-    
-#ifdef TEST_CODE
-    DEBUG.begin(9600);
 #endif
   
 }
@@ -147,6 +148,7 @@ void setup() {
 /** Switches between modes of operation i.e the "OS" **/
 void loop() {
 
+#ifdef ENABLE_TRIO
     //0. configure Xbee
     if(CHECK_STATUS(g_byStatus, BTCON)){
       if(!g_byXbeeisConfig){
@@ -156,19 +158,21 @@ void loop() {
         g_byXbeeisConfig = 1;
       }
     }
-#ifndef TEST_CODE
+#endif
+
+#ifdef ENABLE_ALS    
     //0. Read GPS
     while(GP20U7.available() > 0){
       gps.encode(GP20U7.read());
     }
-#endif
     //1. switch flashing pattern
     DEBUG.println("ALS Stuff");
-#ifndef TEST_CODE
+#ifdef ENABLE_LEDS
     switchFlashingPattern();
     flashRearLEDS();
     //To be tested
     changeBrakeLight();
+#endif
 #endif
     
     DEBUG.println("BT Receive");
@@ -179,36 +183,33 @@ void loop() {
     //3. Parse command/change mode M 
     if (g_byBTRecvFlag) {
         g_byBTRecvFlag = 0;
-#ifdef TEST_CODE
-        DEBUG.write(g_byRecvPacket[0]);
-        DEBUG.write(g_byRecvPacket[1]);
-        DEBUG.write('\n');
-#endif
         BluetoothDeconstructMessage();
     }
-    
-//#ifdef TEST_CODE
-    DEBUG.print("    MODE   ");
-    DEBUG.println(g_byMode);
-    DEBUG.print("    Speed   ");
-    DEBUG.println(g_fSpeed.bits32, DEC);
-    DEBUG.print("    Status   ");
-    DEBUG.println(g_byStatus, BIN);
-    DEBUG.print("    ERPS!!   ");
-    DEBUG.println(CHECK_STATUS(g_byStatus, ERPS));
-    DEBUG.print("    Opp. Speed!!   ");
-    DEBUG.println(g_fOppSpeed.bits32, DEC);
-    DEBUG.print("    Opp. Distance!!   ");
-    DEBUG.println(g_fOppDistance.bits32, DEC);
-    DEBUG.print("    Weight!!   ");
-    DEBUG.println(g_halfWeight, DEC);
-    DEBUG.print("    Name!!   ");
-    DEBUG.write(g_byUserName, NAME_SIZE);
-    DEBUG.print("    Dest!!   ");
-    DEBUG.write(g_byDestTRIOid, ADDR_SIZE);
-    DEBUG.write('\n');
-    
-//#endif
+
+    if(g_byMode == MODE_COACH || g_byMode == MODE_ATHLETE){
+      DEBUG.print("    MODE   ");
+      DEBUG.println(g_byMode);
+      DEBUG.print("    Speed   ");
+      DEBUG.println(g_fSpeed.bits32, DEC);
+      DEBUG.print("    Status   ");
+      DEBUG.println(g_byStatus, BIN);
+      DEBUG.print("    ERPS!!   ");
+      DEBUG.println(CHECK_STATUS(g_byStatus, ERPS));
+      DEBUG.print("    Opp. Speed!!   ");
+      DEBUG.println(g_fOppSpeed.bits32, DEC);
+      DEBUG.print("    Seconds!!   ");
+      DEBUG.println(g_TimeStamp.second.bits32, DEC);
+      DEBUG.print("    Weight!!   ");
+      DEBUG.println(g_halfWeight, DEC);
+      DEBUG.print("    Name!!   ");
+      DEBUG.write(g_byUserName, NAME_SIZE);
+      DEBUG.print("    Dest!!   ");
+      DEBUG.write(g_byDestTRIOid, ADDR_SIZE);
+      DEBUG.write('\n');
+    } else {
+      DEBUG.print("    Seconds!!   ");
+      DEBUG.println(g_TimeStamp.second.bits32, DEC);
+    }
 
     //4. update data
     //updateData();
@@ -223,6 +224,7 @@ void loop() {
 #endif
     }
 
+#ifdef ENABLE_TRIO
     if(g_byMode == MODE_RACE || g_byMode == MODE_COACH || g_byMode == MODE_ATHLETE){ //add athlete and coach
       //5. receive trio
       XBeeReceive();
@@ -235,15 +237,17 @@ void loop() {
     }
       //6. Build & Send to Opponent
       XbeeSendMessage();
-
+#endif
     //7. Send message to App
     BluetoothSend();
 
+#ifdef ENABLE_RTD
     //8. Check ADS
     if(CHECK_STATUS(g_byStatus, POSS_ACC)){
       DEBUG.print("    CheckingFalseAlarm   ");
         checkFalseAlarm();
     }
+#endif
     
 }
 

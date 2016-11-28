@@ -12,6 +12,10 @@
 #include "als.h"
 #include "trio.h"
 
+#ifdef TEST_RACE_ERPS
+uint8_t etest = 1;
+#endif
+
 float32_t generateData(uint8_t index){
     return sine_test[index];
 }
@@ -23,11 +27,6 @@ void getTime(){
     g_TimeStamp.hour = numberOfHours(elapsedTime) & 0x00FF;
     g_TimeStamp.minute = numberOfMinutes(elapsedTime) & 0x00FF;
     g_TimeStamp.second.bits32 = numberOfSeconds(elapsedTime) + (float32_t)(elapsedMillis % 1000)/1000;
-}
-
-void updateBatteryLevel(){
-    //Battery from Analog pin
-    g_byBatteryLevel = 90;
 }
 
 void getRaceData(){
@@ -73,12 +72,18 @@ void updateData2(){
         //getSpeed() getDistance()
         ind = (ind + 1 == 32 ? 0: ind + 1);
             g_fSpeed.bits32 = generateData(ind)/20.0;
-            //getSpeed();
+#ifndef ENABLE_TRIO
+            getRaceData();
+#endif            
             getDistance();
             g_byNextUpdate++;
             break;
         case 1:
+#ifndef ENABLE_ALS        
             g_byBatteryLevel = 90;
+#else
+            getBatteryLevel();
+#endif
             g_byNextUpdate++;
             break;
         case 2:
@@ -93,13 +98,23 @@ void updateData2(){
             break;
         case 4:
             //getLocation();
+#ifdef TEST_RACE_ERPS
+            g_fLongitude.bits32 = -96.341711;
+            g_fLatitude.bits32 = 30.618549;
             g_byNextUpdate++;
+#endif
             break;
         case 5:
             //getUSThreat();
             g_byNextUpdate++;
             break;
         case 6:
+#ifdef TEST_RACE_ERPS
+            if(g_byMode == MODE_RACE && g_TimeStamp.second.bits32 > 15 && etest){
+              etest = 0;
+              SET_STATUS(g_byStatus, ERPS);
+            }
+#endif
             //getADS();
         default:
             g_byNextUpdate = 0;
