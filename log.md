@@ -1,5 +1,8 @@
 ## Log
 
+4.0.1
+- RTD Bugfix
+
 4.0.0
 - Demo Macros Added
 - DEBUG code is limited

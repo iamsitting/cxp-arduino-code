@@ -7,7 +7,7 @@
 //              team14
 //
 // Date         9/22/16 9:40 AM
-// Version      4.0.0
+// Version      4.0.1
 //
 // Copyright    © Carlos Salamanca, 2016
 // Licence      MIT
@@ -135,7 +135,7 @@ void setup() {
 #ifdef ENABLE_ALS    
     setupALS();
 #endif
-#ifndef ENABLE_RTD
+#ifdef ENABLE_RTD
     setupRTD();
 #endif
 

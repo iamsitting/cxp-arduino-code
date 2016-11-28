@@ -12,8 +12,8 @@
 #include "types.h"
 
 //Master MACROS
-#define DEMO_CODE
-//#define FINAL_CODE
+//#define DEMO_CODE
+#define FINAL_CODE
 //#define FINAL_CODE_NO_LEDS
 //#define DEMO_CODE_NO_TRIO
 //#define DEMO_CODE_ONLY_TRIO

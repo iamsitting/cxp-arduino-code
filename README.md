@@ -6,9 +6,12 @@ This project contains the embedded software for the Cycle X-Pro. This project is
 
 ### Version
 
-4.0.0
+4.0.1
 
 ### Most Recent Changes
+
+4.0.1
+- RTD Bugfix
 
 4.0.0
 - Demo Macros Added

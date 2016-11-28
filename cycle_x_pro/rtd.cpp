@@ -91,6 +91,10 @@ void getADS(){
     } else {
         CLEAR_STATUS(g_byStatus, POSS_ACC);
     }
+    DEBUG.println("At: ");
+    DEBUG.println(At);
+    DEBUG.println("Gt: ");
+    DEBUG.println(Gt);
 }
 
 void checkFalseAlarm (){
@@ -198,7 +202,7 @@ float32_t getGyro(uint8_t dir){
 float32_t getAcceleration(uint8_t dir){
     int axRaw, ayRaw, azRaw;         // raw acc. values
     float32_t Ax, Ay, Az, At;
-    
+
     Bmi.readAccelerometer(axRaw, ayRaw, azRaw);
     
     // convert the raw accelerometer data to G's

@@ -184,7 +184,6 @@ void flashRearLEDS() {
 
 void changeBrakeLight(){
     float32_t Ax;
-
     Ax = getAcceleration(X_DIRECTION);
     if (Ax < 0) {
         g_byBrakeCounter++;
