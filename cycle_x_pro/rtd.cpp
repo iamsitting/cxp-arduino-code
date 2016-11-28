@@ -49,7 +49,7 @@ void getCalories() {
     previousMillis_cal = currentMillis; // Current Millis from above may be different than this current millis.
     
     
-    if(g_fSpeed.bits32 < MIN_SPEED){
+    if(g_fSpeed.bits32 < MIN_SPEED_CALORIES){
         cal_sec = 0;
     }
     else if(g_fSpeed.bits32 < 10){
@@ -78,19 +78,22 @@ void getCalories() {
 
 void getADS(){
     
-    float32_t At, Gt;
+    float32_t At=0, Gt=0;
     uint8_t possibleAccident = 0;
-    
-    At = getAcceleration(TOTAL_SUM);
-    Gt = getGyro(TOTAL_SUM);
-    
-    if ( (At > 4 && Gt > 250) || (At > 6) || (Gt > 320) )
-    {
+
+    if(!CHECK_STATUS(g_byStatus, POSS_ACC)){
+      
+      At = getAcceleration(TOTAL_SUM);
+      Gt = getGyro(TOTAL_SUM);
+      
+      if( (At > 4 && Gt > 250) || (At > 6) || (Gt > 320) ){
         SET_STATUS(g_byStatus, POSS_ACC);
         previousMillis_fad = millis();
-    } else {
-        CLEAR_STATUS(g_byStatus, POSS_ACC);
+      }
     }
+    /*else {
+        //CLEAR_STATUS(g_byStatus, POSS_ACC);
+    }*/
     DEBUG.println("At: ");
     DEBUG.println(At);
     DEBUG.println("Gt: ");
@@ -102,9 +105,6 @@ void checkFalseAlarm (){
   uint32_t currentMillis = millis(); //Internal counter
 
   if (currentMillis - previousMillis_fad >= FALSE_ALARM_WINDOW){
-
-    //TODO: Remove this line
-    g_fSpeed.bits32 = 0;
 
     if(g_fSpeed.bits32 < MIN_SPEED){
 

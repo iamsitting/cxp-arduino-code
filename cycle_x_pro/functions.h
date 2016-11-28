@@ -30,6 +30,7 @@ extern "C" {
     void updateData(void);
     void readHandshake(void);
     void sendHandshake(void);
+    void clearData(void);
     void updateData2(void);
 
     

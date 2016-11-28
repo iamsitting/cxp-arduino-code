@@ -6,9 +6,12 @@ This project contains the embedded software for the Cycle X-Pro. This project is
 
 ### Version
 
-4.0.1
+4.0.2
 
 ### Most Recent Changes
+
+4.0.2
+- ADS Algorithm Update
 
 4.0.1
 - RTD Bugfix
@@ -37,17 +40,6 @@ This project contains the embedded software for the Cycle X-Pro. This project is
 3.0.10
 - Added state of charge
 - Added Coach mode to protocol
-
-3.0.9
-- Updated AT Commands
-
-3.0.8
-- Race Mode Tested
-
-3.0.7
-- Tested AT commands
-- Added New Xbee settings
-- Added handshake to protocol
 
 ## Code Design
 

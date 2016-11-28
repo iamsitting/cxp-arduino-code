@@ -57,12 +57,19 @@ void updateData(){
             getLocation();
             g_byNextUpdate++;
             break;
-        case 4:
-            getADS();
         default:
             g_byNextUpdate = 0;
             
     }
+}
+
+void clearData(){
+  g_fSpeed.bits32 = 0;
+  g_fDistance.bits32 = 0;
+  g_fCalories.bits32 = 0;
+  g_fOppSpeed.bits32 = 0;
+  g_fOppDistance.bits32 = 0;
+  g_fOppCalories.bits32 = 0;
 }
 
 void updateData2(){
@@ -458,6 +465,7 @@ void BluetoothDeconstructMessage(){
             CLEAR_STATUS(g_byStatus, NEW_SESSION);
             CLEAR_STATUS(g_byStatus, ERPS);
             CLEAR_STATUS(g_byStatus, ERPS_ACK);
+            clearData();
             SET_STATUS(g_byStatus, RTS);
             break;
         case 0x52: //R - Reset ERPS

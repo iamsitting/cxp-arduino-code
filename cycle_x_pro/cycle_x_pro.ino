@@ -7,7 +7,7 @@
 //              team14
 //
 // Date         9/22/16 9:40 AM
-// Version      4.0.1
+// Version      4.0.2
 //
 // Copyright    © Carlos Salamanca, 2016
 // Licence      MIT
@@ -243,6 +243,7 @@ void loop() {
 
 #ifdef ENABLE_RTD
     //8. Check ADS
+    getADS();
     if(CHECK_STATUS(g_byStatus, POSS_ACC)){
       DEBUG.print("    CheckingFalseAlarm   ");
         checkFalseAlarm();

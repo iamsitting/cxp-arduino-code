@@ -1,5 +1,8 @@
 ## Log
 
+4.0.2
+- ADS Algorithm Update
+
 4.0.1
 - RTD Bugfix
 
