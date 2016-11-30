@@ -13,8 +13,11 @@
 
 //Master MACROS
 //#define DEMO_CODE
-#define FINAL_CODE
+//#define FINAL_CODE
 //#define FINAL_CODE_NO_LEDS
+#define FINAL_CODE_NO_AT
+//#define DEMO_CODE_NO_RTD
+//#define DEMO_CODE_NO_AT
 //#define DEMO_CODE_NO_TRIO
 //#define DEMO_CODE_ONLY_TRIO
 
@@ -24,14 +27,40 @@
 //Use TEST_CODE instead of ENABLE_ADS
 //ENABLE_LEDS needs ENABLE_ADS
 
-#ifdef FINAL_CODE //use this
+#ifdef FINAL_CODE
 #define ENABLE_ALS
 #define ENABLE_TRIO
 #define ENABLE_RTD
 #define ENABLE_LEDS
 #endif
 
-#ifdef DEMO_CODE //use this
+#ifdef FINAL_CODE_NO_AT //use this
+#define ENABLE_ALS
+#define ENABLE_TRIO
+#define ENABLE_RTD
+#define ENABLE_LEDS
+#define NO_AT
+#endif
+
+#ifdef DEMO_CODE_NO_AT //use this
+#define TEST_CODE
+#define TEST_RACE_ERPS
+#define ENABLE_TRIO
+#define NO_AT
+#define USE_WIRE_ANT
+#endif
+
+
+#ifdef DEMO_CODE_NO_RTD
+#define TEST_CODE
+#define TEST_RACE_ERPS
+#define ENABLE_TRIO
+#define ENABLE_ALS
+#define ENABLE_LEDS
+#define DISABLE_BRAKE
+#endif
+
+#ifdef DEMO_CODE
 #define TEST_CODE
 #define TEST_RACE_ERPS
 #define ENABLE_TRIO
@@ -61,38 +90,38 @@
 //#define ENABLE_ALS
 //#define ENABLE_TRIO
 //#define ENABLE_RTD
+//#define NO_AT
+//#define USE_PCB_ANT
+//#define USE_WIRE_ANT
 
 extern float32_t sine_test[32];
 extern uint8_t ind;
 
 /** Pin definitions **/
-#ifdef TEST_CODE
-#define PIN53 53
-#define PIN51 51
-#define PIN49 49
-#endif
-
-
-#define POT_PIN 7
 
 #define USOUND_IN   	A0
+#define BATTERY       A1
+
+#define RELAY         7
+#define RELAY_LED     6
+
+#define ALS_BUTTON    8
+
 #define ALSPIN3     	9
 #define ALSPIN2     	10
 #define ALSPIN1     	11
+
 #define BRAKE_LT    	12
 #define USOUND_LT   	13
-#define ALS_BUTTON 	47
-#define BATTERY A1
-#define RELAY 6
 
-#define ADS_INT1    48
-#define ADS_INT2    50
-#define ADS_CSB     52
+#define ADS_INT1      48
+#define ADS_INT2      50
+#define ADS_CSB       52
 
 #define DEBUG       Serial
-#define GP20U7      Serial1
-#define HC06        Serial2
-#define XBPRO       Serial3
+#define GP20U7      Serial3
+#define HC06        Serial1
+#define XBPRO       Serial2
 
 /** End Pin definitions **/
 

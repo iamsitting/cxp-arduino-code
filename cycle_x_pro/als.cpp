@@ -19,10 +19,13 @@ void ALSButton_isr(){
         if(g_byFlashingPattern < 2) g_byChangedToSimple = 0;
         
         g_wLastDebounceTime = millis();
+        //switchFlashingPattern();
     }
 }
 
 void switchFlashingPattern(){
+  DEBUG.println("Flashing Pattern");
+    DEBUG.println(g_byFlashingPattern);
     switch (g_byFlashingPattern) {
         case 0:
             
@@ -184,7 +187,7 @@ void flashRearLEDS() {
 
 void changeBrakeLight(){
     float32_t Ax;
-    Ax = getAcceleration(X_DIRECTION);
+    Ax = getAcceleration(Y_DIRECTION);
     if (Ax < 0) {
         g_byBrakeCounter++;
 
@@ -203,12 +206,23 @@ void changeBrakeLight(){
         }
     }
 }
+float floatMap(float x, float in_min, float in_max, float out_min, float out_max)
+{
+  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
 
 void getBatteryLevel(){
   float32_t percent, Vadc, Vbat;
   percent = 0;
   Vadc = analogRead(BATTERY);
-  Vbat = .00080566 * Vadc * 12.8 / 2.5;
+  //Vbat = (Vadc/3.3)/79.545;
+  //Vbat = Vadc * 0.0008058608/0.21153846;
+  Vbat = floatMap(Vadc, 0, 4095, 0, 3.3);
+  Vbat = (Vbat/0.21153846)+3;
+  DEBUG.println("Vadc");
+  DEBUG.println(Vadc);
+  DEBUG.println("Vbat");
+  DEBUG.println(Vbat);
 
   if (Vbat >= 12.6){
     g_byStateOfCharge = 1;
@@ -223,6 +237,7 @@ void getBatteryLevel(){
   }
   
   g_byBatteryLevel = roundTo5(percent);
+  //g_byBatteryLevel = (uint8_t) Vbat;
 }
 
 uint8_t roundTo5(float32_t x){
@@ -244,11 +259,13 @@ void switchRelay(){
     if(!g_byRelayState){
       g_byRelayState = HIGH;
       digitalWrite(RELAY,g_byRelayState); 
+      digitalWrite(RELAY_LED,g_byRelayState); 
     }
   } else{
     if(g_byRelayState){
       g_byRelayState = LOW;
       digitalWrite(RELAY,g_byRelayState);
+      digitalWrite(RELAY_LED,g_byRelayState); 
     }
   }
 }
@@ -262,6 +279,7 @@ void setupALS(){
     pinMode(BRAKE_LT, OUTPUT);
     pinMode(BATTERY, INPUT);
     pinMode(RELAY, OUTPUT);
+    pinMode(RELAY_LED, OUTPUT);
     pinMode(USOUND_IN, INPUT);
     analogReadResolution(12);
     pinMode(ALS_BUTTON, INPUT);

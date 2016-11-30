@@ -12,7 +12,7 @@
 #include "globals.h"
 #include "types.h"
 
-#define DEBOUNCE_DELAY 300
+#define DEBOUNCE_DELAY 500
 #define FLASH_INTERVAL 100
 #define REAR_FLASH_INTERVAL 100
 
@@ -21,13 +21,13 @@
 extern volatile uint8_t g_byChangedToSimple;
 extern volatile uint32_t g_wLastDebounceTime;
 extern volatile uint8_t g_byFlashingPattern;
-extern uint32_t g_wPreviousMillis;
+extern volatile uint32_t g_wPreviousMillis;
 extern uint32_t g_wPreviousMillis2;
-extern uint8_t g_byALSPin1State;
-extern uint8_t g_byALSPin2State;
-extern uint8_t g_byALSPin3State;
+extern volatile uint8_t g_byALSPin1State;
+extern volatile uint8_t g_byALSPin2State;
+extern volatile uint8_t g_byALSPin3State;
 extern uint8_t g_byUsoundLtPinState;
-extern uint8_t g_byFlashingCount;
+extern volatile uint8_t g_byFlashingCount;
 extern uint8_t g_byBatteryLevel;
 extern uint8_t g_byThreat;
 extern uint8_t g_byBrakeCounter;
@@ -57,6 +57,7 @@ extern "C" {
     void getBatteryLevel(void);
     uint8_t roundTo5(float32_t x);
     void switchRelay(void);
+    float floatMap(float x, float in_min, float in_max, float out_min, float out_max);
     
     
 #ifdef __cplusplus

@@ -7,7 +7,7 @@
 //              team14
 //
 // Date         9/22/16 9:40 AM
-// Version      4.0.2
+// Version      4.0.3
 //
 // Copyright    © Carlos Salamanca, 2016
 // Licence      MIT
@@ -49,13 +49,13 @@ uint8_t g_byMisses = 0;
 volatile uint8_t g_byChangedToSimple = 0;
 volatile uint32_t g_wLastDebounceTime = 0;
 volatile uint8_t g_byFlashingPattern = 0;
-uint32_t g_wPreviousMillis = 0;
+volatile uint32_t g_wPreviousMillis = 0;
 uint32_t g_wPreviousMillis2 = 0;
-uint8_t g_byALSPin1State = LOW;
-uint8_t g_byALSPin2State = LOW;
-uint8_t g_byALSPin3State = LOW;
+volatile uint8_t g_byALSPin1State = LOW;
+volatile uint8_t g_byALSPin2State = LOW;
+volatile uint8_t g_byALSPin3State = LOW;
 uint8_t g_byUsoundLtPinState = LOW;
-uint8_t g_byFlashingCount = 0;
+volatile uint8_t g_byFlashingCount = 0;
 uint8_t g_byBatteryLevel = 90;
 uint8_t g_byThreat = 0;
 uint8_t g_byBrakeCounter = 0;
@@ -100,7 +100,6 @@ uint32_t previousMillis_fad = 0;
 uint16_t g_halfWeight = 0;
 uint8_t g_byGPSMisses = 0;
 
-
 /** Setup Arduino objects **/
 //#define ALS_TEST
 uint8_t ind = 0;
@@ -109,17 +108,7 @@ uint8_t test = 0;
 
 void setup() {
   uint8_t t = 0;
-  /*
-  g_byMyTRIOid[t++] = '4';
-  g_byMyTRIOid[t++] = '0';
-  g_byMyTRIOid[t++] = 'B';
-  g_byMyTRIOid[t++] = 'D';
-  
-  g_byMyTRIOid[t++] = 'B';
-  g_byMyTRIOid[t++] = '1';
-  g_byMyTRIOid[t++] = 'E';
-  g_byMyTRIOid[t++] = 'C';
-  */
+#ifdef USE_PCB_ANT
   g_byMyTRIOid[t++] = '4';
   g_byMyTRIOid[t++] = '0';
   g_byMyTRIOid[t++] = 'E';
@@ -129,16 +118,31 @@ void setup() {
   g_byMyTRIOid[t++] = 'A';
   g_byMyTRIOid[t++] = 'E';
   g_byMyTRIOid[t++] = '1';
+#else
+  g_byMyTRIOid[t++] = '4';
+  g_byMyTRIOid[t++] = '0';
+  g_byMyTRIOid[t++] = 'B';
+  g_byMyTRIOid[t++] = 'D';
   
-    HC06.begin(BAUD_RATE);
-    DEBUG.begin(9600);
+  g_byMyTRIOid[t++] = 'B';
+  g_byMyTRIOid[t++] = '1';
+  g_byMyTRIOid[t++] = 'E';
+  g_byMyTRIOid[t++] = 'C';
+#endif
+
+  DEBUG.begin(9600);
+  DEBUG.println("Starting...1");
+  
+  HC06.begin(BAUD_RATE);
+  DEBUG.println("Starting...1");  
 #ifdef ENABLE_ALS    
     setupALS();
 #endif
+  DEBUG.println("Starting...1");
 #ifdef ENABLE_RTD
     setupRTD();
 #endif
-
+  DEBUG.println("Starting...1");
 #ifdef ENABLE_TRIO
     setupTrio();
 #endif
@@ -153,7 +157,11 @@ void loop() {
     if(CHECK_STATUS(g_byStatus, BTCON)){
       if(!g_byXbeeisConfig){
         DEBUG.println("Configuring...");
+#ifdef NO_AT
+        delay(5000);
+#else
         XBeeConfigure();
+#endif
         sendHandshake(); //This is what breaks the App's ProgressDialog
         g_byXbeeisConfig = 1;
       }
@@ -161,17 +169,16 @@ void loop() {
 #endif
 
 #ifdef ENABLE_ALS    
-    //0. Read GPS
-    while(GP20U7.available() > 0){
-      gps.encode(GP20U7.read());
-    }
+    
     //1. switch flashing pattern
     DEBUG.println("ALS Stuff");
 #ifdef ENABLE_LEDS
     switchFlashingPattern();
     flashRearLEDS();
     //To be tested
+#ifndef DISABLE_BRAKE
     changeBrakeLight();
+#endif
 #endif
 #endif
     
@@ -179,6 +186,8 @@ void loop() {
     //2. listen for commands from App
     BluetoothReceive();
 
+    DEBUG.println("Pattern");
+    DEBUG.println(g_byFlashingPattern);
     DEBUG.println("BT Parse");
     //3. Parse command/change mode M 
     if (g_byBTRecvFlag) {

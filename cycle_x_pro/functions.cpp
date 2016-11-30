@@ -40,6 +40,9 @@ void updateData(){
     
     switch(g_byNextUpdate){
         case 0:
+            while(GP20U7.available() > 0){
+              gps.encode(GP20U7.read());
+            }
             getSpeed();
             switchRelay();
             getDistance();
@@ -78,7 +81,7 @@ void updateData2(){
         case 0:
         //getSpeed() getDistance()
         ind = (ind + 1 == 32 ? 0: ind + 1);
-            g_fSpeed.bits32 = generateData(ind)/20.0;
+            g_fSpeed.bits32 = generateData(ind)/40.0;
 #ifndef ENABLE_TRIO
             getRaceData();
 #endif            
@@ -88,6 +91,7 @@ void updateData2(){
         case 1:
 #ifndef ENABLE_ALS        
             g_byBatteryLevel = 90;
+            g_byStateOfCharge = 1;
 #else
             getBatteryLevel();
 #endif
